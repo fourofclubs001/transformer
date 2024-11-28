@@ -55,6 +55,32 @@ class AttentionModuleTest(unittest.TestCase):
 
     def test_can_calculate_output_tokens_using_values(self): pass
 
-    def test_raise_exception_when_different_token_size_on_compatibility(self): pass
+    def assert_raise_error_calculate_compatibility(self,
+                                                   query: torch.Tensor, 
+                                                   key: torch.Tensor, 
+                                                   exception: Exception, 
+                                                   errorMessage: str):
 
-    def test_raise_exception_when_different_number_of_batch_on_compatibility(self): pass
+        with self.assertRaises(exception) as error:
+
+            self.attentionBlock.calculateCompatibility(query, key)
+
+        self.assertEqual(error.exception.args[0], errorMessage)
+
+    def test_raise_exception_when_different_token_size_on_compatibility(self): 
+
+        query = self.onesTensor
+        key = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
+
+        self.assert_raise_error_calculate_compatibility(query, key, 
+                                                        CannotUseDifferentQueryAndKeyTokenLenght, 
+                                                        CANNOT_USE_DIFFERENT_QUERY_AND_KEY_TOKEN_LENGHT_ERROR_MSG)
+
+    def test_raise_exception_when_different_number_of_batch_on_compatibility(self):
+
+        query = self.onesTensor
+        key = torch.ones((2, self.sequenceLenght, self.tokenLenght))
+
+        self.assert_raise_error_calculate_compatibility(query, key, 
+                                                        CannotUseDifferentQueryAndKeyBatchLenght, 
+                                                        CANNOT_USE_DIFFERENT_QUERY_AND_KEY_BATCH_LENGHT_ERROR_MSG)
