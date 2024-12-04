@@ -18,12 +18,20 @@ class CannotUseDifferentQueryAndKeyBatchLenght(Exception):
 
 class AttentionBlock(nn.Module):
 
-    def __init__(self):
+    def __init__(self, queryKeyTokenLenght: int, valueTokenLenght: int, modelDimension: int):
 
         super().__init__()
 
+        self.qW = nn.Linear(queryKeyTokenLenght, modelDimension)
+        self.kW = nn.Linear(queryKeyTokenLenght, modelDimension)
+        self.vW = nn.Linear(valueTokenLenght, modelDimension)
+
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 
+        query = self.qW(query)
+        key = self.kW(key)
+        value = self.vW(value)
+        
         compatibility = self.calculateCompatibility(query, key)
         compatibility = self.scaleCompatibility(compatibility)
         compatibility = self.softmaxCompatibility(compatibility)
