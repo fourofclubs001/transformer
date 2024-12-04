@@ -42,4 +42,11 @@ class AttentionBlock(nn.Module):
         compatibilityMatrix = torch.matmul(query, keyTranspose)
 
         return compatibilityMatrix
+    
+    def scaleCompatibility(self, compatibility: torch.Tensor)-> torch.Tensor:
 
+        return torch.div(compatibility, torch.sqrt(torch.tensor(compatibility.shape[1])))
+    
+    def softmaxCompatibility(self, compatibility: torch.Tensor)-> torch.Tensor:
+
+        return torch.softmax(compatibility, dim=2)

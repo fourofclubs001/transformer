@@ -53,6 +53,34 @@ class AttentionModuleTest(unittest.TestCase):
 
         self.assertTrue(torch.eq(compatibility, expectedCompatibility).all())
 
+    def test_can_scale_compatibility_matrix(self):
+
+        querySequenceLenght = self.sequenceLenght + 1
+        keySequenceLenght = self.sequenceLenght
+
+        compatibility = torch.rand((2, querySequenceLenght, keySequenceLenght))
+        expectedCompatibility = torch.div(compatibility, torch.sqrt(torch.tensor(querySequenceLenght)))
+
+        compatibility = self.attentionBlock.scaleCompatibility(compatibility)
+
+        self.assertTrue(torch.eq(compatibility, expectedCompatibility).all())
+
+    def test_can_apply_softmax_over_compatibility(self):
+
+        querySequenceLenght = self.sequenceLenght + 1
+        keySequenceLenght = self.sequenceLenght
+
+        compatibility = torch.rand((2, querySequenceLenght, keySequenceLenght))
+
+        compatibility = self.attentionBlock.softmaxCompatibility(compatibility)
+
+        sumOne = torch.sum(compatibility, dim=2)
+        expected = torch.ones((2, querySequenceLenght))
+        vectorDifference = sumOne-expected
+        diference = torch.sum(vectorDifference)
+        
+        self.assertTrue(diference < 1e-3)
+
     def test_can_calculate_output_tokens_using_values(self): pass
 
     def assert_raise_error_calculate_compatibility(self,
