@@ -78,10 +78,40 @@ class AttentionModuleTest(unittest.TestCase):
         expected = torch.ones((2, querySequenceLenght))
         vectorDifference = sumOne-expected
         diference = torch.sum(vectorDifference)
-        
+
         self.assertTrue(diference < 1e-3)
 
-    def test_can_calculate_output_tokens_using_values(self): pass
+    def test_can_calculate_output_tokens_using_values(self):
+
+        querySequenceLenght = self.sequenceLenght + 1
+        keySequenceLenght = self.sequenceLenght
+
+        compatibility = torch.rand((2, querySequenceLenght, keySequenceLenght))
+
+        valueSequenceLenght = self.sequenceLenght
+
+        value = torch.ones((2,valueSequenceLenght, self.tokenLenght))
+
+        output = self.attentionBlock.calculateOutput(compatibility, value)
+
+        expected = compatibility @ value
+
+        self.assertTrue(torch.eq(output, expected).all())
+
+    def test_can_do_pass_foward(self):
+
+        querySequenceLenght = self.sequenceLenght + 1
+        keySequenceLenght = self.sequenceLenght
+
+        queries = torch.ones((2, querySequenceLenght, self.tokenLenght))
+        keys = torch.ones((2, keySequenceLenght, self.tokenLenght))
+        values = torch.ones((2, keySequenceLenght, self.tokenLenght))
+
+        output = self.attentionBlock(queries, keys, values)
+
+        expected = torch.ones((2, querySequenceLenght, self.tokenLenght))
+
+        self.assertTrue(torch.eq(output, expected).all())
 
     def assert_raise_error_calculate_compatibility(self,
                                                    query: torch.Tensor, 

@@ -22,9 +22,14 @@ class AttentionBlock(nn.Module):
 
         super().__init__()
 
-    def forward(self, x: torch.Tensor)-> torch.Tensor:
+    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 
-        return x
+        compatibility = self.calculateCompatibility(query, key)
+        compatibility = self.scaleCompatibility(compatibility)
+        compatibility = self.softmaxCompatibility(compatibility)
+        output = self.calculateOutput(compatibility, value)
+
+        return output
     
     def calculateCompatibility(self, 
                                query: torch.Tensor, 
@@ -50,3 +55,7 @@ class AttentionBlock(nn.Module):
     def softmaxCompatibility(self, compatibility: torch.Tensor)-> torch.Tensor:
 
         return torch.softmax(compatibility, dim=2)
+    
+    def calculateOutput(self, compatibility: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
+
+        return torch.matmul(compatibility, value)
