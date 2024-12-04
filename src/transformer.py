@@ -31,17 +31,16 @@ class AttentionBlock(nn.Module):
 
         return output
     
+    def checkQueryKeyDimensionCompatibility(self, query: torch.Tensor, key: torch.Tensor)-> None:
+
+        if query.shape[0] != key.shape[0]: raise CannotUseDifferentQueryAndKeyBatchLenght
+        if query.shape[2] != key.shape[2]: raise CannotUseDifferentQueryAndKeyTokenLenght
+
     def calculateCompatibility(self, 
                                query: torch.Tensor, 
                                key: torch.Tensor)-> torch.Tensor:
 
-        if query.shape[0] != key.shape[0]:
-
-            raise CannotUseDifferentQueryAndKeyBatchLenght
-
-        if query.shape[2] != key.shape[2]:
-
-            raise CannotUseDifferentQueryAndKeyTokenLenght
+        self.checkQueryKeyDimensionCompatibility(query, key)
 
         keyTranspose = torch.transpose(key, 1, 2)
         compatibilityMatrix = torch.matmul(query, keyTranspose)

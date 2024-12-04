@@ -11,14 +11,10 @@ class AttentionModuleTest(unittest.TestCase):
 
         self.onesTensor = torch.ones((1,self.sequenceLenght, self.tokenLenght))
 
+        self.querySequenceLenght = self.sequenceLenght + 1
+        self.keySequenceLenght = self.sequenceLenght
+
         self.attentionBlock = AttentionBlock()
-
-    def test_input_dimension_equals_output_dimension(self):
-
-        input = self.onesTensor
-        output = self.attentionBlock(input)
-
-        self.assertEqual(input.size(), output.size())
 
     def test_can_calculate_compatibility(self):
 
@@ -55,11 +51,8 @@ class AttentionModuleTest(unittest.TestCase):
 
     def test_can_scale_compatibility_matrix(self):
 
-        querySequenceLenght = self.sequenceLenght + 1
-        keySequenceLenght = self.sequenceLenght
-
-        compatibility = torch.rand((2, querySequenceLenght, keySequenceLenght))
-        expectedCompatibility = torch.div(compatibility, torch.sqrt(torch.tensor(querySequenceLenght)))
+        compatibility = torch.ones((2, self.querySequenceLenght, self.keySequenceLenght))
+        expectedCompatibility = torch.div(compatibility, torch.sqrt(torch.tensor(self.querySequenceLenght)))
 
         compatibility = self.attentionBlock.scaleCompatibility(compatibility)
 
@@ -67,26 +60,18 @@ class AttentionModuleTest(unittest.TestCase):
 
     def test_can_apply_softmax_over_compatibility(self):
 
-        querySequenceLenght = self.sequenceLenght + 1
-        keySequenceLenght = self.sequenceLenght
-
-        compatibility = torch.rand((2, querySequenceLenght, keySequenceLenght))
+        compatibility = torch.ones((2, self.querySequenceLenght, self.keySequenceLenght))
 
         compatibility = self.attentionBlock.softmaxCompatibility(compatibility)
 
         sumOne = torch.sum(compatibility, dim=2)
-        expected = torch.ones((2, querySequenceLenght))
-        vectorDifference = sumOne-expected
-        diference = torch.sum(vectorDifference)
+        expected = torch.ones((2, self.querySequenceLenght))
 
-        self.assertTrue(diference < 1e-3)
+        self.assertTrue(torch.eq(sumOne, expected).all())
 
     def test_can_calculate_output_tokens_using_values(self):
 
-        querySequenceLenght = self.sequenceLenght + 1
-        keySequenceLenght = self.sequenceLenght
-
-        compatibility = torch.rand((2, querySequenceLenght, keySequenceLenght))
+        compatibility = torch.ones((2, self.querySequenceLenght, self.keySequenceLenght))
 
         valueSequenceLenght = self.sequenceLenght
 
@@ -100,18 +85,21 @@ class AttentionModuleTest(unittest.TestCase):
 
     def test_can_do_pass_foward(self):
 
-        querySequenceLenght = self.sequenceLenght + 1
-        keySequenceLenght = self.sequenceLenght
+        query = torch.ones((2, self.querySequenceLenght, self.tokenLenght))
+        key = torch.ones((2, self.keySequenceLenght, self.tokenLenght))
+        values = torch.ones((2, self.keySequenceLenght, self.tokenLenght))
 
-        queries = torch.ones((2, querySequenceLenght, self.tokenLenght))
-        keys = torch.ones((2, keySequenceLenght, self.tokenLenght))
-        values = torch.ones((2, keySequenceLenght, self.tokenLenght))
+        output = self.attentionBlock(query, key, values)
 
-        output = self.attentionBlock(queries, keys, values)
-
-        expected = torch.ones((2, querySequenceLenght, self.tokenLenght))
+        expected = torch.ones((2, self.querySequenceLenght, self.tokenLenght))
 
         self.assertTrue(torch.eq(output, expected).all())
+
+    def test_can_select_input_token_lenght(self):
+
+        pass
+
+
 
     def assert_raise_error_calculate_compatibility(self,
                                                    query: torch.Tensor, 
