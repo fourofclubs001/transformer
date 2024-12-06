@@ -1,5 +1,5 @@
 from test_base import *
-from Attention import *
+from AttentionBlock import *
 import torch
 
 class AttentionModuleTest(BaseTest):

@@ -1,6 +1,6 @@
 from test_base import *
 import torch
-from Encoder import *
+from EncoderBlock import *
 
 class EncoderModuleTest(BaseTest):
 

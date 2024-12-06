@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from Attention import *
+from AttentionBlock import *
 
 class Encoder(nn.Module):
 
