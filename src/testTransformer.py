@@ -8,7 +8,6 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
 
         self.sequenceLenght = 8
-        self.tokenLenght = 64
         self.modelDimension = 512
 
 class AttentionModuleTest(BaseTest):
@@ -17,15 +16,12 @@ class AttentionModuleTest(BaseTest):
 
         super().setUp()
 
-        self.onesTensor = torch.ones((1,self.sequenceLenght, self.tokenLenght))
+        self.onesTensor = torch.ones((1,self.sequenceLenght, self.modelDimension))
 
         self.querySequenceLenght = self.sequenceLenght + 1
         self.keySequenceLenght = self.sequenceLenght
-
-        queryKeyTokenLenght = self.tokenLenght
-        valueTokenLenght = self.tokenLenght
         
-        self.attentionBlock = AttentionBlock(queryKeyTokenLenght, valueTokenLenght, self.modelDimension)
+        self.attentionBlock = AttentionBlock(self.modelDimension)
 
     def test_can_calculate_compatibility(self):
 
@@ -34,29 +30,29 @@ class AttentionModuleTest(BaseTest):
 
         compatibility = self.attentionBlock.calculateCompatibility(query, key)
 
-        expectedCompatibility = torch.ones((1, self.sequenceLenght, self.sequenceLenght))*64
+        expectedCompatibility = torch.ones((1, self.sequenceLenght, self.sequenceLenght))*self.modelDimension
 
         self.assertTrue(torch.eq(compatibility, expectedCompatibility).all())
 
     def test_can_calculate_compatibility_with_different_sequence_leght(self):
 
         query = self.onesTensor.clone()
-        key = torch.ones((1, self.sequenceLenght+1, self.tokenLenght))
+        key = torch.ones((1, self.sequenceLenght+1, self.modelDimension))
 
         compatibility = self.attentionBlock.calculateCompatibility(query, key)
 
-        expectedCompatibility = torch.ones((1, self.sequenceLenght, self.sequenceLenght+1))*64
+        expectedCompatibility = torch.ones((1, self.sequenceLenght, self.sequenceLenght+1))*self.modelDimension
 
         self.assertTrue(torch.eq(compatibility, expectedCompatibility).all())
 
     def test_can_calculate_compatibility_with_greater_batch_size(self):
 
-        query = torch.ones((2, self.sequenceLenght, self.tokenLenght))
-        key = torch.ones((2, self.sequenceLenght, self.tokenLenght))
+        query = torch.ones((2, self.sequenceLenght, self.modelDimension))
+        key = torch.ones((2, self.sequenceLenght, self.modelDimension))
 
         compatibility = self.attentionBlock.calculateCompatibility(query, key)
 
-        expectedCompatibility = torch.ones((2, self.sequenceLenght, self.sequenceLenght))*64
+        expectedCompatibility = torch.ones((2, self.sequenceLenght, self.sequenceLenght))*self.modelDimension
 
         self.assertTrue(torch.eq(compatibility, expectedCompatibility).all())
 
@@ -86,7 +82,7 @@ class AttentionModuleTest(BaseTest):
 
         valueSequenceLenght = self.sequenceLenght
 
-        value = torch.ones((2,valueSequenceLenght, self.tokenLenght))
+        value = torch.ones((2,valueSequenceLenght, self.modelDimension))
 
         output = self.attentionBlock.calculateOutput(compatibility, value)
 
@@ -96,9 +92,9 @@ class AttentionModuleTest(BaseTest):
 
     def test_can_do_pass_foward(self):
 
-        query = torch.ones((2, self.querySequenceLenght, self.tokenLenght))
-        key = torch.ones((2, self.keySequenceLenght, self.tokenLenght))
-        values = torch.ones((2, self.keySequenceLenght, self.tokenLenght))
+        query = torch.ones((2, self.querySequenceLenght, self.modelDimension))
+        key = torch.ones((2, self.keySequenceLenght, self.modelDimension))
+        values = torch.ones((2, self.keySequenceLenght, self.modelDimension))
 
         output = self.attentionBlock(query, key, values)
 
@@ -108,40 +104,19 @@ class AttentionModuleTest(BaseTest):
         self.assertEqual(output.shape[1], expected.shape[1])
         self.assertEqual(output.shape[2], expected.shape[2])
 
-    def test_can_select_input_token_lenght(self):
+    def test_can_select_model_dimension_token_lenght(self):
 
-        queryKeyTokenLenght = 8
-        modelDimension = 16
+        attentionBlock = AttentionBlock(self.modelDimension)
 
-        attentionBlock = AttentionBlock(queryKeyTokenLenght, self.tokenLenght, modelDimension)
-
-        query = torch.ones((1, self.sequenceLenght, queryKeyTokenLenght))
-        key = torch.ones((1, self.sequenceLenght, queryKeyTokenLenght))
-        value = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+        query = torch.ones((1, self.sequenceLenght, self.modelDimension))
+        key = torch.ones((1, self.sequenceLenght, self.modelDimension))
+        value = torch.ones((1, self.sequenceLenght, self.modelDimension))
 
         output = attentionBlock(query, key, value)
 
         self.assertEqual(output.shape[0], 1)
         self.assertEqual(output.shape[1], self.sequenceLenght)
-        self.assertEqual(output.shape[2], modelDimension)
-
-    def test_can_select_value_token_lenght(self):
-
-        queryKeyTokenLenght = 8
-        valueTokenLenght = 32
-        modelDimension = 16
-
-        attentionBlock = AttentionBlock(queryKeyTokenLenght, valueTokenLenght, modelDimension)
-
-        query = torch.ones((1, self.sequenceLenght, queryKeyTokenLenght))
-        key = torch.ones((1, self.sequenceLenght, queryKeyTokenLenght))
-        value = torch.ones((1, self.sequenceLenght, valueTokenLenght))
-
-        output = attentionBlock(query, key, value)
-
-        self.assertEqual(output.shape[0], 1)
-        self.assertEqual(output.shape[1], self.sequenceLenght)
-        self.assertEqual(output.shape[2], modelDimension)
+        self.assertEqual(output.shape[2], self.modelDimension)
 
     def assert_raise_error_calculate_compatibility(self,
                                                    query: torch.Tensor, 
@@ -158,7 +133,7 @@ class AttentionModuleTest(BaseTest):
     def test_raise_exception_when_different_token_size_on_compatibility(self): 
 
         query = self.onesTensor
-        key = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
+        key = torch.ones((1, self.sequenceLenght, self.modelDimension+1))
 
         self.assert_raise_error_calculate_compatibility(query, key, 
                                                         CannotUseDifferentQueryAndKeyTokenLenght, 
@@ -167,7 +142,7 @@ class AttentionModuleTest(BaseTest):
     def test_raise_exception_when_different_number_of_batch_on_compatibility(self):
 
         query = self.onesTensor
-        key = torch.ones((2, self.sequenceLenght, self.tokenLenght))
+        key = torch.ones((2, self.sequenceLenght, self.modelDimension))
 
         self.assert_raise_error_calculate_compatibility(query, key, 
                                                         CannotUseDifferentQueryAndKeyBatchLenght, 
@@ -175,9 +150,9 @@ class AttentionModuleTest(BaseTest):
         
     def test_raise_exception_when_forward_with_different_key_and_value_sequence_lenght(self):
 
-        query = torch.ones((1, self.sequenceLenght, self.tokenLenght))
-        key = torch.ones((1, self.sequenceLenght, self.tokenLenght))
-        value = torch.ones((1, self.sequenceLenght + 1, self.tokenLenght))
+        query = torch.ones((1, self.sequenceLenght, self.modelDimension))
+        key = torch.ones((1, self.sequenceLenght, self.modelDimension))
+        value = torch.ones((1, self.sequenceLenght + 1, self.modelDimension))
 
         with self.assertRaises(CannotForwardWithDifferentKeyValueSequenceLenght) as error:
 
@@ -189,9 +164,9 @@ class AttentionModuleTest(BaseTest):
 
         with self.assertRaises(QueryAndKeyMustMatchInitilizationTokenLenght) as error:
 
-            query = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
-            key = torch.ones((1, self.sequenceLenght, self.tokenLenght))
-            value = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+            query = torch.ones((1, self.sequenceLenght, self.modelDimension+1))
+            key = torch.ones((1, self.sequenceLenght, self.modelDimension))
+            value = torch.ones((1, self.sequenceLenght, self.modelDimension))
 
             self.attentionBlock(query, key, value)
 
@@ -201,9 +176,9 @@ class AttentionModuleTest(BaseTest):
 
         with self.assertRaises(QueryAndKeyMustMatchInitilizationTokenLenght) as error:
 
-            query = torch.ones((1, self.sequenceLenght, self.tokenLenght))
-            key = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
-            value = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+            query = torch.ones((1, self.sequenceLenght, self.modelDimension))
+            key = torch.ones((1, self.sequenceLenght, self.modelDimension+1))
+            value = torch.ones((1, self.sequenceLenght, self.modelDimension))
 
             self.attentionBlock(query, key, value)
 
@@ -213,9 +188,9 @@ class AttentionModuleTest(BaseTest):
 
         with self.assertRaises(ValueMustMatchInitilizationTokenLenght) as error:
 
-            query = torch.ones((1, self.sequenceLenght, self.tokenLenght))
-            key = torch.ones((1, self.sequenceLenght, self.tokenLenght))
-            value = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
+            query = torch.ones((1, self.sequenceLenght, self.modelDimension))
+            key = torch.ones((1, self.sequenceLenght, self.modelDimension))
+            value = torch.ones((1, self.sequenceLenght, self.modelDimension+1))
 
             self.attentionBlock(query, key, value)
 
@@ -229,10 +204,23 @@ class EncoderModuleTest(BaseTest):
 
     def test_can_apply_attention(self):
 
-        input = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+        input = torch.ones((1, self.sequenceLenght, self.modelDimension))
 
-        encoder = Encoder(self.tokenLenght, self.modelDimension)
+        encoder = Encoder(self.modelDimension)
         output = encoder.applyAttention(input)
+
+        expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
+
+        self.assertEqual(output.shape[0], expected.shape[0])
+        self.assertEqual(output.shape[1], expected.shape[1])
+        self.assertEqual(output.shape[2], expected.shape[2])
+
+    def test_can_do_pass_forward(self):
+
+        input = torch.ones((1, self.sequenceLenght, self.modelDimension))
+
+        encoder = Encoder(self.modelDimension)
+        output = encoder(input)
 
         expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
 

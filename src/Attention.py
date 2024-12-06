@@ -39,16 +39,15 @@ class ValueMustMatchInitilizationTokenLenght(Exception):
 
 class AttentionBlock(nn.Module):
 
-    def __init__(self, queryKeyTokenLenght: int, valueTokenLenght: int, modelDimension: int):
+    def __init__(self, modelDimension: int):
 
         super().__init__()
 
-        self.queryKeyTokenLenght = queryKeyTokenLenght
-        self.valueTokenLenght = valueTokenLenght
+        self.modelDimension = modelDimension
 
-        self.qW = nn.Linear(queryKeyTokenLenght, modelDimension)
-        self.kW = nn.Linear(queryKeyTokenLenght, modelDimension)
-        self.vW = nn.Linear(valueTokenLenght, modelDimension)
+        self.qW = nn.Linear(modelDimension, modelDimension)
+        self.kW = nn.Linear(modelDimension, modelDimension)
+        self.vW = nn.Linear(modelDimension, modelDimension)
 
     def checkSameKeyAndValueSequenceLenght(self, key: torch.Tensor, value: torch.Tensor)-> None:
 
@@ -56,9 +55,9 @@ class AttentionBlock(nn.Module):
 
     def checkTokensLenght(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> None:
 
-        if query.shape[2]!= self.queryKeyTokenLenght: raise QueryAndKeyMustMatchInitilizationTokenLenght
-        if key.shape[2]!= self.queryKeyTokenLenght: raise QueryAndKeyMustMatchInitilizationTokenLenght
-        if value.shape[2]!= self.valueTokenLenght: raise ValueMustMatchInitilizationTokenLenght
+        if query.shape[2]!= self.modelDimension: raise QueryAndKeyMustMatchInitilizationTokenLenght
+        if key.shape[2]!= self.modelDimension: raise QueryAndKeyMustMatchInitilizationTokenLenght
+        if value.shape[2]!= self.modelDimension: raise ValueMustMatchInitilizationTokenLenght
 
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 
