@@ -178,4 +178,38 @@ class AttentionModuleTest(unittest.TestCase):
 
         self.assertEqual(error.exception.args[0], CANNOT_FORWARD_WITH_DIFFERENT_KEY_AND_VALUE_SEQUENCE_LENGHT)
 
-    def test_raise_exception_when_key_or_value_do_not_math_input_token_lenght(self): pass
+    def test_raise_exception_when_forward_query_does_not_match_initial_token_lenght(self):
+
+        with self.assertRaises(QueryAndKeyMustMatchInitilizationTokenLenght) as error:
+
+            query = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
+            key = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+            value = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+
+            self.attentionBlock(query, key, value)
+
+        self.assertEqual(error.exception.args[0], QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+
+    def test_raise_exception_when_forward_key_does_not_match_initial_token_lenght(self):
+
+        with self.assertRaises(QueryAndKeyMustMatchInitilizationTokenLenght) as error:
+
+            query = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+            key = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
+            value = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+
+            self.attentionBlock(query, key, value)
+
+        self.assertEqual(error.exception.args[0], QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+
+    def test_raise_exception_when_forward_value_does_not_match_initial_token_lenght(self):
+
+        with self.assertRaises(ValueMustMatchInitilizationTokenLenght) as error:
+
+            query = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+            key = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+            value = torch.ones((1, self.sequenceLenght, self.tokenLenght+1))
+
+            self.attentionBlock(query, key, value)
+
+        self.assertEqual(error.exception.args[0], VALUE_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)

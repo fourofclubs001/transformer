@@ -4,6 +4,8 @@ import torch.nn as nn
 CANNOT_USE_DIFFERENT_QUERY_AND_KEY_TOKEN_LENGHT_ERROR_MSG = "Cannot use different query and key token lenght"
 CANNOT_USE_DIFFERENT_QUERY_AND_KEY_BATCH_LENGHT_ERROR_MSG = "Cannot use different query and key batch lenght"
 CANNOT_FORWARD_WITH_DIFFERENT_KEY_AND_VALUE_SEQUENCE_LENGHT = "Cannot forward with different key and value sequence lenght"
+QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT = "Query and Key must match initialization token lenght"
+VALUE_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT = "Value must match initialization token lenght"
 
 class CannotUseDifferentQueryAndKeyTokenLenght(Exception):
 
@@ -23,11 +25,26 @@ class CannotForwardWithDifferentKeyValueSequenceLenght(Exception):
 
         super().__init__(CANNOT_FORWARD_WITH_DIFFERENT_KEY_AND_VALUE_SEQUENCE_LENGHT)
 
+class QueryAndKeyMustMatchInitilizationTokenLenght(Exception):
+
+    def __init__(self):
+
+        super().__init__(QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+
+class ValueMustMatchInitilizationTokenLenght(Exception):
+
+    def __init__(self):
+
+        super().__init__(VALUE_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+
 class AttentionBlock(nn.Module):
 
     def __init__(self, queryKeyTokenLenght: int, valueTokenLenght: int, modelDimension: int):
 
         super().__init__()
+
+        self.queryKeyTokenLenght = queryKeyTokenLenght
+        self.valueTokenLenght = valueTokenLenght
 
         self.qW = nn.Linear(queryKeyTokenLenght, modelDimension)
         self.kW = nn.Linear(queryKeyTokenLenght, modelDimension)
@@ -40,6 +57,10 @@ class AttentionBlock(nn.Module):
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 
         self.checkSameKeyAndValueSequenceLenght(key, value)
+
+        if query.shape[2]!= self.queryKeyTokenLenght: raise QueryAndKeyMustMatchInitilizationTokenLenght
+        if key.shape[2]!= self.queryKeyTokenLenght: raise QueryAndKeyMustMatchInitilizationTokenLenght
+        if value.shape[2]!= self.valueTokenLenght: raise ValueMustMatchInitilizationTokenLenght
 
         query = self.qW(query)
         key = self.kW(key)
