@@ -160,9 +160,9 @@ class AttentionModuleTest(BaseTest):
 
         self.assertEqual(error.exception.args[0], CANNOT_FORWARD_WITH_DIFFERENT_KEY_AND_VALUE_SEQUENCE_LENGHT)
 
-    def test_raise_exception_when_forward_query_does_not_match_initial_token_lenght(self):
+    def test_raise_exception_when_forward_query_token_lenght_does_not_match_model_dimension(self):
 
-        with self.assertRaises(QueryAndKeyMustMatchInitilizationTokenLenght) as error:
+        with self.assertRaises(QueryKeyValueTokenLenghtMustMatchModelDimension) as error:
 
             query = torch.ones((1, self.sequenceLenght, self.modelDimension+1))
             key = torch.ones((1, self.sequenceLenght, self.modelDimension))
@@ -170,11 +170,11 @@ class AttentionModuleTest(BaseTest):
 
             self.attentionBlock(query, key, value)
 
-        self.assertEqual(error.exception.args[0], QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+        self.assertEqual(error.exception.args[0], QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION)
 
     def test_raise_exception_when_forward_key_does_not_match_initial_token_lenght(self):
 
-        with self.assertRaises(QueryAndKeyMustMatchInitilizationTokenLenght) as error:
+        with self.assertRaises(QueryKeyValueTokenLenghtMustMatchModelDimension) as error:
 
             query = torch.ones((1, self.sequenceLenght, self.modelDimension))
             key = torch.ones((1, self.sequenceLenght, self.modelDimension+1))
@@ -182,11 +182,11 @@ class AttentionModuleTest(BaseTest):
 
             self.attentionBlock(query, key, value)
 
-        self.assertEqual(error.exception.args[0], QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+        self.assertEqual(error.exception.args[0], QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION)
 
     def test_raise_exception_when_forward_value_does_not_match_initial_token_lenght(self):
 
-        with self.assertRaises(ValueMustMatchInitilizationTokenLenght) as error:
+        with self.assertRaises(QueryKeyValueTokenLenghtMustMatchModelDimension) as error:
 
             query = torch.ones((1, self.sequenceLenght, self.modelDimension))
             key = torch.ones((1, self.sequenceLenght, self.modelDimension))
@@ -194,7 +194,7 @@ class AttentionModuleTest(BaseTest):
 
             self.attentionBlock(query, key, value)
 
-        self.assertEqual(error.exception.args[0], VALUE_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+        self.assertEqual(error.exception.args[0], QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION)
 
 class EncoderModuleTest(BaseTest):
 

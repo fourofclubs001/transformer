@@ -4,8 +4,7 @@ import torch.nn as nn
 CANNOT_USE_DIFFERENT_QUERY_AND_KEY_TOKEN_LENGHT_ERROR_MSG = "Cannot use different query and key token lenght"
 CANNOT_USE_DIFFERENT_QUERY_AND_KEY_BATCH_LENGHT_ERROR_MSG = "Cannot use different query and key batch lenght"
 CANNOT_FORWARD_WITH_DIFFERENT_KEY_AND_VALUE_SEQUENCE_LENGHT = "Cannot forward with different key and value sequence lenght"
-QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT = "Query and Key must match initialization token lenght"
-VALUE_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT = "Value must match initialization token lenght"
+QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION = "Query, Key and Value token lenght must match token dimension"
 
 class CannotUseDifferentQueryAndKeyTokenLenght(Exception):
 
@@ -25,17 +24,11 @@ class CannotForwardWithDifferentKeyValueSequenceLenght(Exception):
 
         super().__init__(CANNOT_FORWARD_WITH_DIFFERENT_KEY_AND_VALUE_SEQUENCE_LENGHT)
 
-class QueryAndKeyMustMatchInitilizationTokenLenght(Exception):
+class QueryKeyValueTokenLenghtMustMatchModelDimension(Exception):
 
     def __init__(self):
 
-        super().__init__(QUERY_AND_KEY_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
-
-class ValueMustMatchInitilizationTokenLenght(Exception):
-
-    def __init__(self):
-
-        super().__init__(VALUE_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+        super().__init__(QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION)
 
 class AttentionBlock(nn.Module):
 
@@ -55,9 +48,9 @@ class AttentionBlock(nn.Module):
 
     def checkTokensLenght(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> None:
 
-        if query.shape[2]!= self.modelDimension: raise QueryAndKeyMustMatchInitilizationTokenLenght
-        if key.shape[2]!= self.modelDimension: raise QueryAndKeyMustMatchInitilizationTokenLenght
-        if value.shape[2]!= self.modelDimension: raise ValueMustMatchInitilizationTokenLenght
+        if query.shape[2]!= self.modelDimension: raise QueryKeyValueTokenLenghtMustMatchModelDimension
+        if key.shape[2]!= self.modelDimension: raise QueryKeyValueTokenLenghtMustMatchModelDimension
+        if value.shape[2]!= self.modelDimension: raise QueryKeyValueTokenLenghtMustMatchModelDimension
 
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 
