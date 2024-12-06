@@ -166,6 +166,16 @@ class AttentionModuleTest(unittest.TestCase):
                                                         CannotUseDifferentQueryAndKeyBatchLenght, 
                                                         CANNOT_USE_DIFFERENT_QUERY_AND_KEY_BATCH_LENGHT_ERROR_MSG)
         
-    def test_raise_exception_when_forward_with_different_key_and_value_sequence_lenght(self): pass
+    def test_raise_exception_when_forward_with_different_key_and_value_sequence_lenght(self):
+
+        query = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+        key = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+        value = torch.ones((1, self.sequenceLenght + 1, self.tokenLenght))
+
+        with self.assertRaises(CannotForwardWithDifferentKeyValueSequenceLenght) as error:
+
+            self.attentionBlock(query, key, value)
+
+        self.assertEqual(error.exception.args[0], CANNOT_FORWARD_WITH_DIFFERENT_KEY_AND_VALUE_SEQUENCE_LENGHT)
 
     def test_raise_exception_when_key_or_value_do_not_math_input_token_lenght(self): pass
