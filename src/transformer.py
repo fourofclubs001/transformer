@@ -54,13 +54,16 @@ class AttentionBlock(nn.Module):
 
         if key.shape[1] != value.shape[1]: raise CannotForwardWithDifferentKeyValueSequenceLenght
 
-    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
-
-        self.checkSameKeyAndValueSequenceLenght(key, value)
+    def checkTokensLenght(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> None:
 
         if query.shape[2]!= self.queryKeyTokenLenght: raise QueryAndKeyMustMatchInitilizationTokenLenght
         if key.shape[2]!= self.queryKeyTokenLenght: raise QueryAndKeyMustMatchInitilizationTokenLenght
         if value.shape[2]!= self.valueTokenLenght: raise ValueMustMatchInitilizationTokenLenght
+
+    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
+
+        self.checkSameKeyAndValueSequenceLenght(key, value)
+        self.checkTokensLenght(query, key, value)
 
         query = self.qW(query)
         key = self.kW(key)
