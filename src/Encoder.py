@@ -10,6 +10,8 @@ class Encoder(nn.Module):
 
         self.attentionBlock = AttentionBlock(modelDimension)
         self.linear = nn.Linear(modelDimension, modelDimension)
+        self.layerNorm1 = nn.LayerNorm(modelDimension)
+        self.layerNorm2 = nn.LayerNorm(modelDimension)
 
     def applyAttention(self, input: torch.Tensor)-> torch.Tensor:
 
@@ -21,12 +23,12 @@ class Encoder(nn.Module):
 
         x = self.applyAttention(input)
         x += residual
-        x = torch.batch_norm(x)
+        x = self.layerNorm1(x)
 
         residual = x.clone()
 
         x = self.linear(x)
         x += residual
-        x = torch.batch_norm(x)
+        x = self.layerNorm2(x)
 
         return x
