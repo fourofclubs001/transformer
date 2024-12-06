@@ -1,13 +1,21 @@
 import unittest
-from transformer import *
+from Attention import *
+from Encoder import *
 import torch
 
-class AttentionModuleTest(unittest.TestCase):
+class BaseTest(unittest.TestCase):
 
     def setUp(self):
 
         self.sequenceLenght = 8
         self.tokenLenght = 64
+        self.modelDimension = 512
+
+class AttentionModuleTest(BaseTest):
+
+    def setUp(self):
+
+        super().setUp()
 
         self.onesTensor = torch.ones((1,self.sequenceLenght, self.tokenLenght))
 
@@ -16,9 +24,8 @@ class AttentionModuleTest(unittest.TestCase):
 
         queryKeyTokenLenght = self.tokenLenght
         valueTokenLenght = self.tokenLenght
-        modelDimension = self.tokenLenght
         
-        self.attentionBlock = AttentionBlock(queryKeyTokenLenght, valueTokenLenght, modelDimension)
+        self.attentionBlock = AttentionBlock(queryKeyTokenLenght, valueTokenLenght, self.modelDimension)
 
     def test_can_calculate_compatibility(self):
 
@@ -95,7 +102,7 @@ class AttentionModuleTest(unittest.TestCase):
 
         output = self.attentionBlock(query, key, values)
 
-        expected = torch.ones((2, self.querySequenceLenght, self.tokenLenght))
+        expected = torch.ones((2, self.querySequenceLenght, self.modelDimension))
 
         self.assertEqual(output.shape[0], expected.shape[0])
         self.assertEqual(output.shape[1], expected.shape[1])
@@ -213,3 +220,22 @@ class AttentionModuleTest(unittest.TestCase):
             self.attentionBlock(query, key, value)
 
         self.assertEqual(error.exception.args[0], VALUE_MUST_MATCH_INITIALIZATION_TOKEN_LENGHT)
+
+class EncoderModuleTest(BaseTest):
+
+    def setUp(self):
+
+        super().setUp()
+
+    def test_can_apply_attention(self):
+
+        input = torch.ones((1, self.sequenceLenght, self.tokenLenght))
+
+        encoder = Encoder(self.tokenLenght, self.modelDimension)
+        output = encoder.applyAttention(input)
+
+        expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
+
+        self.assertEqual(output.shape[0], expected.shape[0])
+        self.assertEqual(output.shape[1], expected.shape[1])
+        self.assertEqual(output.shape[2], expected.shape[2])
