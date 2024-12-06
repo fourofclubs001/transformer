@@ -1,14 +1,6 @@
-import unittest
+from test_base import *
 from Attention import *
-from Encoder import *
 import torch
-
-class BaseTest(unittest.TestCase):
-
-    def setUp(self):
-
-        self.sequenceLenght = 8
-        self.modelDimension = 512
 
 class AttentionModuleTest(BaseTest):
 
@@ -195,35 +187,3 @@ class AttentionModuleTest(BaseTest):
             self.attentionBlock(query, key, value)
 
         self.assertEqual(error.exception.args[0], QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION)
-
-class EncoderModuleTest(BaseTest):
-
-    def setUp(self):
-
-        super().setUp()
-
-    def test_can_apply_attention(self):
-
-        input = torch.ones((1, self.sequenceLenght, self.modelDimension))
-
-        encoder = Encoder(self.modelDimension)
-        output = encoder.applyAttention(input)
-
-        expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
-
-        self.assertEqual(output.shape[0], expected.shape[0])
-        self.assertEqual(output.shape[1], expected.shape[1])
-        self.assertEqual(output.shape[2], expected.shape[2])
-
-    def test_can_do_pass_forward(self):
-
-        input = torch.ones((1, self.sequenceLenght, self.modelDimension))
-
-        encoder = Encoder(self.modelDimension)
-        output = encoder(input)
-
-        expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
-
-        self.assertEqual(output.shape[0], expected.shape[0])
-        self.assertEqual(output.shape[1], expected.shape[1])
-        self.assertEqual(output.shape[2], expected.shape[2])
