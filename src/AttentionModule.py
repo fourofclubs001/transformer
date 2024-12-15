@@ -30,7 +30,7 @@ class QueryKeyValueTokenLenghtMustMatchModelDimension(Exception):
 
         super().__init__(QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION)
 
-class AttentionBlock(nn.Module):
+class AttentionModule(nn.Module):
 
     def __init__(self, modelDimension: int):
 

@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-from AttentionBlock import *
+from AttentionModule import *
 
-class MultiHeadAttentionBlock(nn.Module):
+class MultiHeadAttentionModule(nn.Module):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
@@ -14,7 +14,7 @@ class MultiHeadAttentionBlock(nn.Module):
 
         for _ in range(nHeads):
 
-            self.attentionHeads.append(AttentionBlock(modelDimension))
+            self.attentionHeads.append(AttentionModule(modelDimension))
 
     def concatenateHeadsForwardPass(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 

@@ -1,5 +1,5 @@
 from test_base import *
-from AttentionBlock import *
+from AttentionModule import *
 import torch
 
 class AttentionModuleTest(BaseTest):
@@ -10,7 +10,7 @@ class AttentionModuleTest(BaseTest):
 
         self.onesTensor = torch.ones((1,self.sequenceLenght, self.modelDimension))
         
-        self.attentionBlock = AttentionBlock(self.modelDimension)
+        self.attentionBlock = AttentionModule(self.modelDimension)
 
         self.query = torch.ones((2, self.querySequenceLenght, self.modelDimension))
         self.key = torch.ones((2, self.keySequenceLenght, self.modelDimension))
@@ -87,7 +87,7 @@ class AttentionModuleTest(BaseTest):
     def test_can_select_model_dimension_token_lenght(self):
 
         modelDimension = 3
-        attentionBlock = AttentionBlock(modelDimension)
+        attentionBlock = AttentionModule(modelDimension)
 
         query = torch.ones((1, self.sequenceLenght, modelDimension))
         key = torch.ones((1, self.sequenceLenght, modelDimension))

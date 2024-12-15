@@ -1,6 +1,6 @@
 from test_base import *
 import torch
-from EncoderBlock import *
+from EncoderModule import *
 
 class EncoderModuleTest(BaseTest):
 
@@ -8,7 +8,7 @@ class EncoderModuleTest(BaseTest):
 
         super().setUp()
 
-        self.encoder = Encoder(self.nHeads, self.modelDimension)
+        self.encoder = EncoderModule(self.nHeads, self.modelDimension)
 
         self.input = torch.ones((1, self.sequenceLenght, self.modelDimension))
         self.expected = torch.ones((1, self.sequenceLenght, self.modelDimension))

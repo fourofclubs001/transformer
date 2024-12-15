@@ -1,7 +1,7 @@
 import unittest
 import torch
 from test_base import *
-from MultiHeadAttentionBlock import *
+from MultiHeadAttentionModule import *
 
 class MultiHeadAttentionModuleTest(BaseTest):
 
@@ -9,7 +9,7 @@ class MultiHeadAttentionModuleTest(BaseTest):
 
         super().setUp()
 
-        self.multiHeadAttentionBlock = MultiHeadAttentionBlock(self.nHeads, self.modelDimension)
+        self.multiHeadAttentionBlock = MultiHeadAttentionModule(self.nHeads, self.modelDimension)
 
         self.query = torch.ones((2, self.querySequenceLenght, self.modelDimension))
         self.key = torch.ones((2, self.keySequenceLenght, self.modelDimension))

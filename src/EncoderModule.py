@@ -1,14 +1,14 @@
 import torch
 import torch.nn as nn
-from MultiHeadAttentionBlock import *
+from MultiHeadAttentionModule import *
 
-class Encoder(nn.Module):
+class EncoderModule(nn.Module):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
         super().__init__()
 
-        self.multiHeadAttentionBlock = MultiHeadAttentionBlock(nHeads, modelDimension)
+        self.multiHeadAttentionBlock = MultiHeadAttentionModule(nHeads, modelDimension)
         self.linear = nn.Linear(modelDimension, modelDimension)
         self.layerNorm1 = nn.LayerNorm(modelDimension)
         self.layerNorm2 = nn.LayerNorm(modelDimension)
