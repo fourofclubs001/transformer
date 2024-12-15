@@ -98,6 +98,20 @@ class AttentionModuleTest(BaseTest):
 
         self.assert_equal_dimensions(output, expected)
 
+    def test_can_apply_mask(self):
+
+        attentionBlock = AttentionModule(self.modelDimension, applyMask = True)
+
+        compatibility = torch.ones((2, self.querySequenceLenght, self.keySequenceLenght))
+
+        compatibility = attentionBlock.softmaxCompatibility(compatibility)
+
+        ones = torch.ones_like(compatibility)
+        neutralForMask = torch.tril(ones)
+        appliedMask = neutralForMask * compatibility
+
+        self.assertTrue(torch.eq(appliedMask, compatibility).all())
+
     def assert_raise_error_calculate_compatibility(self,
                                                    query: torch.Tensor, 
                                                    key: torch.Tensor, 

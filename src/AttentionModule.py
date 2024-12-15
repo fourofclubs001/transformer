@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import math
 
 CANNOT_USE_DIFFERENT_QUERY_AND_KEY_TOKEN_LENGHT_ERROR_MSG = "Cannot use different query and key token lenght"
 CANNOT_USE_DIFFERENT_QUERY_AND_KEY_BATCH_LENGHT_ERROR_MSG = "Cannot use different query and key batch lenght"
@@ -32,7 +33,7 @@ class QueryKeyValueTokenLenghtMustMatchModelDimension(Exception):
 
 class AttentionModule(nn.Module):
 
-    def __init__(self, modelDimension: int):
+    def __init__(self, modelDimension: int, applyMask: bool = False):
 
         super().__init__()
 
@@ -41,6 +42,8 @@ class AttentionModule(nn.Module):
         self.qW = nn.Linear(modelDimension, modelDimension)
         self.kW = nn.Linear(modelDimension, modelDimension)
         self.vW = nn.Linear(modelDimension, modelDimension)
+
+        self.applyMask = applyMask
 
     def checkSameKeyAndValueSequenceLenght(self, key: torch.Tensor, value: torch.Tensor)-> None:
 
@@ -90,7 +93,17 @@ class AttentionModule(nn.Module):
     
     def softmaxCompatibility(self, compatibility: torch.Tensor)-> torch.Tensor:
 
-        return torch.softmax(compatibility, dim=2)
+        if self.applyMask:
+
+            zeros = torch.zeros_like(compatibility)
+            inverseMask = torch.tril(torch.ones_like(compatibility))
+            mask = zeros.masked_fill(inverseMask == 0, -math.inf)
+
+            compatibility += mask
+
+        result = torch.softmax(compatibility, dim=2)
+
+        return result
     
     def calculateOutput(self, compatibility: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 
