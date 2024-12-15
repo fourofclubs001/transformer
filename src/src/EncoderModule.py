@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from MultiHeadAttentionModule import *
+from src.MultiHeadAttentionModule import *
 
 class EncoderModule(nn.Module):
 

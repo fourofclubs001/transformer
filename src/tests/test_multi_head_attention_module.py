@@ -1,6 +1,6 @@
 import torch
 from test_base import *
-from MultiHeadAttentionModule import *
+from src.MultiHeadAttentionModule import *
 
 class MultiHeadAttentionModuleTest(BaseTest):
 
