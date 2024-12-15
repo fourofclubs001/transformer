@@ -1,4 +1,3 @@
-import unittest
 import torch
 from test_base import *
 from MultiHeadAttentionModule import *
