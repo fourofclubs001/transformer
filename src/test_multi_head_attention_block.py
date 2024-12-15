@@ -11,13 +11,13 @@ class MultiHeadAttentionModuleTest(BaseTest):
 
         self.multiHeadAttentionBlock = MultiHeadAttentionBlock(self.nHeads, self.modelDimension)
 
+        self.query = torch.ones((2, self.querySequenceLenght, self.modelDimension))
+        self.key = torch.ones((2, self.keySequenceLenght, self.modelDimension))
+        self.values = torch.ones((2, self.keySequenceLenght, self.modelDimension))
+
     def test_can_concatenate_heads_foward_pass(self):
 
-        query = torch.ones((2, self.querySequenceLenght, self.modelDimension))
-        key = torch.ones((2, self.keySequenceLenght, self.modelDimension))
-        values = torch.ones((2, self.keySequenceLenght, self.modelDimension))
-
-        output = self.multiHeadAttentionBlock.concatenateHeadsForwardPass(query, key, values)
+        output = self.multiHeadAttentionBlock.concatenateHeadsForwardPass(self.query, self.key, self.values)
 
         expected = torch.ones((2, self.querySequenceLenght, self.modelDimension*self.nHeads))
 
@@ -25,11 +25,7 @@ class MultiHeadAttentionModuleTest(BaseTest):
 
     def test_can_do_forward_pass(self):
 
-        query = torch.ones((2, self.querySequenceLenght, self.modelDimension))
-        key = torch.ones((2, self.keySequenceLenght, self.modelDimension))
-        values = torch.ones((2, self.keySequenceLenght, self.modelDimension))
-
-        output = self.multiHeadAttentionBlock(query, key, values)
+        output = self.multiHeadAttentionBlock(self.query, self.key, self.values)
 
         expected = torch.ones((2, self.querySequenceLenght, self.modelDimension))
 
