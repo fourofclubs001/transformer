@@ -10,10 +10,6 @@ class MultiHeadAttentionModuleTest(BaseTest):
 
         self.multiHeadAttentionModule = MultiHeadAttentionModule(self.nHeads, self.modelDimension)
 
-        self.query = torch.ones((2, self.querySequenceLenght, self.modelDimension))
-        self.key = torch.ones((2, self.keySequenceLenght, self.modelDimension))
-        self.values = torch.ones((2, self.keySequenceLenght, self.modelDimension))
-
     def test_can_concatenate_heads_foward_pass(self):
 
         output = self.multiHeadAttentionModule.concatenateHeadsForwardPass(self.query, self.key, self.values)
