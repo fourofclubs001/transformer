@@ -8,14 +8,14 @@ class EncoderModule(nn.Module):
 
         super().__init__()
 
-        self.multiHeadAttentionBlock = MultiHeadAttentionModule(nHeads, modelDimension)
+        self.multiHeadAttentionModule = MultiHeadAttentionModule(nHeads, modelDimension)
         self.linear = nn.Linear(modelDimension, modelDimension)
         self.layerNorm1 = nn.LayerNorm(modelDimension)
         self.layerNorm2 = nn.LayerNorm(modelDimension)
 
     def applyAttention(self, input: torch.Tensor)-> torch.Tensor:
 
-        return self.multiHeadAttentionBlock(input, input, input)
+        return self.multiHeadAttentionModule(input, input, input)
     
     def forward(self, input: torch.Tensor)-> torch.Tensor:
 
