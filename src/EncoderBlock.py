@@ -1,21 +1,21 @@
 import torch
 import torch.nn as nn
-from AttentionBlock import *
+from MultiHeadAttentionBlock import *
 
 class Encoder(nn.Module):
 
-    def __init__(self, modelDimension: int):
+    def __init__(self, nHeads: int, modelDimension: int):
 
         super().__init__()
 
-        self.attentionBlock = AttentionBlock(modelDimension)
+        self.multiHeadAttentionBlock = MultiHeadAttentionBlock(nHeads, modelDimension)
         self.linear = nn.Linear(modelDimension, modelDimension)
         self.layerNorm1 = nn.LayerNorm(modelDimension)
         self.layerNorm2 = nn.LayerNorm(modelDimension)
 
     def applyAttention(self, input: torch.Tensor)-> torch.Tensor:
 
-        return self.attentionBlock(input, input, input)
+        return self.multiHeadAttentionBlock(input, input, input)
     
     def forward(self, input: torch.Tensor)-> torch.Tensor:
 

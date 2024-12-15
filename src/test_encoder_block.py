@@ -8,7 +8,8 @@ class EncoderModuleTest(BaseTest):
 
         super().setUp()
 
-        self.encoder = Encoder(self.modelDimension)
+        nHeads = 8
+        self.encoder = Encoder(8, self.modelDimension)
         self.input = torch.ones((1, self.sequenceLenght, self.modelDimension))
         self.expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
 
