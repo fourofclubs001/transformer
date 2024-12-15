@@ -9,9 +9,6 @@ class AttentionModuleTest(BaseTest):
         super().setUp()
 
         self.onesTensor = torch.ones((1,self.sequenceLenght, self.modelDimension))
-
-        self.querySequenceLenght = self.sequenceLenght + 1
-        self.keySequenceLenght = self.sequenceLenght
         
         self.attentionBlock = AttentionBlock(self.modelDimension)
 

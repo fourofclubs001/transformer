@@ -8,16 +8,10 @@ class EncoderModuleTest(BaseTest):
 
         super().setUp()
 
-        nHeads = 8
-        self.encoder = Encoder(8, self.modelDimension)
+        self.encoder = Encoder(self.nHeads, self.modelDimension)
+
         self.input = torch.ones((1, self.sequenceLenght, self.modelDimension))
         self.expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
-
-    def assert_equal_dimensions(self, result: torch.Tensor, expected: torch.Tensor)-> None:
-
-        self.assertEqual(result.shape[0], expected.shape[0])
-        self.assertEqual(result.shape[1], expected.shape[1])
-        self.assertEqual(result.shape[2], expected.shape[2])
 
     def test_can_apply_attention(self):
 
