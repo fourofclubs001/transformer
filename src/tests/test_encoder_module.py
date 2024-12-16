@@ -8,17 +8,23 @@ class EncoderModuleTest(BaseTest):
 
         super().setUp()
 
-        self.encoder = EncoderModule(self.nHeads, self.modelDimension)
+        self.encoderModule = EncoderModule(self.nHeads, self.modelDimension)
 
         self.input = torch.ones((1, self.sequenceLenght, self.modelDimension))
         self.expected = torch.ones((1, self.sequenceLenght, self.modelDimension))
 
     def test_can_apply_attention(self):
 
-        output = self.encoder.applyAttention(self.input)
+        output = self.encoderModule.applyAttention(self.input)
         self.assert_equal_dimensions(output, self.expected)
+
+    def test_can_add_and_norm(self):
+
+        layerNorm = nn.LayerNorm(self.modelDimension)
+        output = self.encoderModule.addAndNorm(self.input,  self.input, layerNorm)
+        self.assert_equal_dimensions(output, self.input)
 
     def test_can_do_pass_forward(self):
 
-        output = self.encoder(self.input)
+        output = self.encoderModule(self.input)
         self.assert_equal_dimensions(output, self.expected)

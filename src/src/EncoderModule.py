@@ -17,18 +17,26 @@ class EncoderModule(nn.Module):
 
         return self.multiHeadAttentionModule(input, input, input)
     
+    def addAndNorm(self, 
+                   current: torch.Tensor, 
+                   residual: torch.Tensor, 
+                   layerNorm: nn.LayerNorm)-> torch.Tensor:
+        
+        current += residual
+        current = layerNorm(current)
+
+        return current
+
     def forward(self, input: torch.Tensor)-> torch.Tensor:
 
         residual = input.clone()
 
         x = self.applyAttention(input)
-        x += residual
-        x = self.layerNorm1(x)
+        x = self.addAndNorm(x, residual, self.layerNorm1)
 
         residual = x.clone()
 
         x = self.linear(x)
-        x += residual
-        x = self.layerNorm2(x)
+        x = self.addAndNorm(x, residual, self.layerNorm2)
 
         return x
