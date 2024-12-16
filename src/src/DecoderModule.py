@@ -14,8 +14,6 @@ class DecoderModule(TransformerModule):
 
         self.crossMultiHeadAttention = MultiHeadAttentionModule(nHeads, modelDimension)
 
-        self.linear = nn.Linear(modelDimension, modelDimension)
-
     def applyMaskMultiHeadAttention(self, input: torch.Tensor)-> torch.Tensor:
 
         return self.maskMultiHeadAttention(input, input, input)
