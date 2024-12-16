@@ -7,10 +7,9 @@ class EncoderModule(TransformerModule):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
-        super().__init__()
+        super().__init__(modelDimension)
 
         self.multiHeadAttentionModule = MultiHeadAttentionModule(nHeads, modelDimension)
-        self.linear = nn.Linear(modelDimension, modelDimension)
         self.layerNorm1 = nn.LayerNorm(modelDimension)
         self.layerNorm2 = nn.LayerNorm(modelDimension)
 

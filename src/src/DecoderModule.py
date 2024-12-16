@@ -7,7 +7,7 @@ class DecoderModule(TransformerModule):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
-        super().__init__()
+        super().__init__(modelDimension)
 
         self.maskMultiHeadAttention = MultiHeadAttentionModule(nHeads, modelDimension, 
                                                                applyMask = True)

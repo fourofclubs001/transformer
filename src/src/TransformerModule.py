@@ -3,9 +3,11 @@ import torch.nn as nn
 
 class TransformerModule(nn.Module):
 
-    def __init__(self):
+    def __init__(self, modelDimension: int):
 
         super().__init__()
+
+        self.linear = nn.Linear(modelDimension, modelDimension)
 
     def addAndNorm(self, 
                    current: torch.Tensor, 
