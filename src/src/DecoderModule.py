@@ -7,16 +7,12 @@ class DecoderModule(TransformerModule):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
-        super().__init__(modelDimension)
+        super().__init__(modelDimension, 3)
 
         self.maskMultiHeadAttention = MultiHeadAttentionModule(nHeads, modelDimension, 
                                                                applyMask = True)
 
         self.crossMultiHeadAttention = MultiHeadAttentionModule(nHeads, modelDimension)
-
-        self.layerNorm1 = nn.LayerNorm(modelDimension)
-        self.layerNorm2 = nn.LayerNorm(modelDimension)
-        self.layerNorm3 = nn.LayerNorm(modelDimension)
 
         self.linear = nn.Linear(modelDimension, modelDimension)
 
@@ -35,16 +31,16 @@ class DecoderModule(TransformerModule):
         residual = decoderInput.clone()
 
         x = self.applyMaskMultiHeadAttention(decoderInput)
-        x = self.addAndNorm(x, residual, self.layerNorm1)
+        x = self.addAndNorm(x, residual, self.layerNorms[0])
 
         residual = x.clone()
 
         x = self.applyCrossMultiHeadAttention(x, encoderOutput)
-        x = self.addAndNorm(x, residual, self.layerNorm2)
+        x = self.addAndNorm(x, residual, self.layerNorms[1])
 
         residual = x.clone()
 
         x = self.linear(x)
-        x = self.addAndNorm(x, residual, self.layerNorm3)
+        x = self.addAndNorm(x, residual, self.layerNorms[2])
 
         return x

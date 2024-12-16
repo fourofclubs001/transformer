@@ -6,7 +6,7 @@ class TransformerModuleTest(BaseTest):
 
     def test_can_add_and_norm(self):
 
-        transformerModule = TransformerModule(self.modelDimension)
+        transformerModule = TransformerModule(self.modelDimension, 0)
 
         layerNorm = nn.LayerNorm(self.modelDimension)
         output = transformerModule.addAndNorm(self.query,  self.query, layerNorm)

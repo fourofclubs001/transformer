@@ -7,11 +7,9 @@ class EncoderModule(TransformerModule):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
-        super().__init__(modelDimension)
+        super().__init__(modelDimension, 2)
 
         self.multiHeadAttentionModule = MultiHeadAttentionModule(nHeads, modelDimension)
-        self.layerNorm1 = nn.LayerNorm(modelDimension)
-        self.layerNorm2 = nn.LayerNorm(modelDimension)
 
     def applyAttention(self, input: torch.Tensor)-> torch.Tensor:
 
@@ -22,11 +20,11 @@ class EncoderModule(TransformerModule):
         residual = input.clone()
 
         x = self.applyAttention(input)
-        x = self.addAndNorm(x, residual, self.layerNorm1)
+        x = self.addAndNorm(x, residual, self.layerNorms[0])
 
         residual = x.clone()
 
         x = self.linear(x)
-        x = self.addAndNorm(x, residual, self.layerNorm2)
+        x = self.addAndNorm(x, residual, self.layerNorms[1])
 
         return x
