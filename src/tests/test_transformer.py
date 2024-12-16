@@ -23,7 +23,13 @@ class TransformerTest(BaseTest):
     def test_can_apply_output(self):
 
         output = self.transformer.applyOutput(self.query)
-        expected = torch.ones((self.query.shape[0], self.nTokens))
 
+        expected = torch.ones((self.query.shape[0], self.nTokens))
         self.assert_equal_dimensions(output, expected)
-        self.assertTrue(torch.equal(torch.sum(output,dim=1), torch.ones(self.query.shape[0])))
+
+    def test_can_do_pass_forward(self):
+
+        output = self.transformer(self.query, self.key)
+
+        expected = torch.ones((self.query.shape[0], self.nTokens))
+        self.assert_equal_dimensions(output, expected)

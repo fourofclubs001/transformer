@@ -42,3 +42,11 @@ class Transformer(nn.Module):
         x = self.softmax(x)
 
         return x
+    
+    def forward(self, decoderInput: torch.Tensor, encoderInput: torch.Tensor)-> torch.Tensor:
+
+        encoderOutput = self.applyEncoders(encoderInput)
+        decoderOutput = self.applyDecoders(decoderInput, encoderOutput)
+        output = self.applyOutput(decoderOutput)
+
+        return output
