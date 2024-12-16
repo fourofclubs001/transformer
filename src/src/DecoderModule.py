@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
 from src.MultiHeadAttentionModule import *
+from src.TransformerModule import *
 
-class DecoderModule(nn.Module):
+class DecoderModule(TransformerModule):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
@@ -28,16 +29,6 @@ class DecoderModule(nn.Module):
                                      encoderOutput: torch.Tensor)-> torch.Tensor:
         
         return self.crossMultiHeadAttention(decoderInput, encoderOutput, encoderOutput)
-    
-    def addAndNorm(self, 
-                   current: torch.Tensor, 
-                   residual: torch.Tensor, 
-                   layerNorm: nn.LayerNorm)-> torch.Tensor:
-        
-        current += residual
-        current = layerNorm(current)
-
-        return current
     
     def forward(self, decoderInput: torch.Tensor, encoderOutput: torch.Tensor)-> torch.Tensor:
 

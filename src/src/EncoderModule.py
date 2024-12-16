@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
 from src.MultiHeadAttentionModule import *
+from src.TransformerModule import *
 
-class EncoderModule(nn.Module):
+class EncoderModule(TransformerModule):
 
     def __init__(self, nHeads: int, modelDimension: int):
 
@@ -16,16 +17,6 @@ class EncoderModule(nn.Module):
     def applyAttention(self, input: torch.Tensor)-> torch.Tensor:
 
         return self.multiHeadAttentionModule(input, input, input)
-    
-    def addAndNorm(self, 
-                   current: torch.Tensor, 
-                   residual: torch.Tensor, 
-                   layerNorm: nn.LayerNorm)-> torch.Tensor:
-        
-        current += residual
-        current = layerNorm(current)
-
-        return current
 
     def forward(self, input: torch.Tensor)-> torch.Tensor:
 

@@ -22,12 +22,6 @@ class DecoderModuleTest(BaseTest):
         output = self.decoderModule.applyCrossMultiHeadAttention(self.query, self.key)
         self.assert_equal_dimensions(output, self.query)
 
-    def test_can_add_and_norm(self):
-
-        layerNorm = nn.LayerNorm(self.modelDimension)
-        output = self.decoderModule.addAndNorm(self.query,  self.query, layerNorm)
-        self.assert_equal_dimensions(output, self.query)
-
     def test_can_do_pass_forward(self):
 
         output = self.decoderModule(self.query, self.key)
