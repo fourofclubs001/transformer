@@ -1,13 +1,18 @@
 import torch
 import torch.nn as nn
+from src.PositionWiseFeedForwardModule import *
 
 class TransformerModule(nn.Module):
 
-    def __init__(self, modelDimension: int, nLayerNorm: int):
+    def __init__(self, modelDimension: int, nLayerNorm: int, innerPositionWiseFeedForwardDimension: int = None):
 
         super().__init__()
 
-        self.linear = nn.Linear(modelDimension, modelDimension)
+        if innerPositionWiseFeedForwardDimension == None:
+        
+            innerPositionWiseFeedForwardDimension = 4*modelDimension
+
+        self.linear = PositionWiseFeedForwardModule(modelDimension, innerPositionWiseFeedForwardDimension)
 
         self.layerNorms = []
 
