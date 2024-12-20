@@ -26,3 +26,29 @@ class PositionalEncoderModule(nn.Module):
         result = torch.Tensor(result)
 
         return result
+    
+    def calculateSequencePositionalEncoding(self, sequenceLenght: int)-> torch.Tensor:
+         
+        result = torch.zeros((sequenceLenght, self.modelDimension))
+
+        for position in range(sequenceLenght):
+             
+            result[position] = self.calculatePositionalEncodingForSingleTokenAt(position)
+
+        return result
+    
+    def calculateBatchesPositionalEncoding(self, batchLenght: int, sequenceLenght: int)-> torch.Tensor:
+         
+        result = torch.zeros((batchLenght, sequenceLenght, self.modelDimension))
+
+        for batch in range(batchLenght):
+              
+            result[batch] = self.calculateSequencePositionalEncoding(sequenceLenght)
+
+        return result
+    
+    def forward(self, input: torch.Tensor)-> torch.Tensor:
+         
+        output = input + self.calculateBatchesPositionalEncoding(input.shape[0], input.shape[1])
+
+        return output
