@@ -10,6 +10,11 @@ class TransformerTest(BaseTest):
         self.nTokens = 10
         self.transformer = Transformer(self.querySequenceLenght, self.nTokens)
 
+    def test_can_apply_positional_encoding(self):
+
+        output = self.transformer.applyPositionalEncoding(self.query)
+        self.assert_equal_dimensions(output, self.query)
+
     def test_can_apply_encoders(self):
 
         output = self.transformer.applyEncoders(self.query)
@@ -26,6 +31,11 @@ class TransformerTest(BaseTest):
 
         expected = torch.ones((self.query.shape[0], self.nTokens))
         self.assert_equal_dimensions(output, expected)
+
+        sum = torch.sum(output, dim=1)
+
+        self.assertTrue(0.9 < sum[0] and sum[0] < 1.1)
+        self.assertTrue(0.9 < sum[1] and sum[1] < 1.1)
 
     def test_can_do_pass_forward(self):
 

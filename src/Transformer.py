@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from src.EncoderModule import *
 from src.DecoderModule import *
+from src.PositionalEncoderModule import *
 
 class Transformer(nn.Module):
 
@@ -14,11 +15,17 @@ class Transformer(nn.Module):
         nEncoders = 6
         nDecoders = 6
 
+        self.positionalEncoder = PositionalEncoderModule(modelDimension)
+
         self.encoders = [EncoderModule(nHeads, modelDimension) for _ in range(nEncoders)]
         self.decoders = [DecoderModule(nHeads, modelDimension) for _ in range(nDecoders)]
 
         self.linear = nn.Linear(modelDimension*sequenceLenght, nTokens)
-        self.softmax = nn.Softmax()
+        self.softmax = nn.Softmax(dim=1)
+
+    def applyPositionalEncoding(self, input: torch.Tensor)-> torch.Tensor:
+
+        return self.positionalEncoder(input)
 
     def applyEncoders(self, input: torch.Tensor)-> torch.Tensor:
 
@@ -42,9 +49,11 @@ class Transformer(nn.Module):
         x = self.softmax(x)
 
         return x
-    
+
     def forward(self, decoderInput: torch.Tensor, encoderInput: torch.Tensor)-> torch.Tensor:
 
+        encoderInput = self.applyPositionalEncoding(encoderInput)
+        decoderInput = self.applyPositionalEncoding(decoderInput)
         encoderOutput = self.applyEncoders(encoderInput)
         decoderOutput = self.applyDecoders(decoderInput, encoderOutput)
         output = self.applyOutput(decoderOutput)
