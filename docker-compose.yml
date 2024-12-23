@@ -1,7 +1,33 @@
 services:
-  transformer:
-    build: .
-    mem_limit: 8g
-    container_name: transformer
+  jupyter-gpu:
+    build:
+      context: .
+    image: slim-jupyter-base
+    container_name: ${CONTAINER_NAME}-gpu
+    restart: always
+    runtime: nvidia
+    shm_size: ${CONTAINER_SHARED_MEMORY}
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=${CONTAINER_DEVICES}
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    ports:
+      - "${CONTAINER_PORT}:8888"
     volumes:
-      - .:/code
+      - ${CONTAINER_WORKSPACE}:/workspace
+    profiles:
+      - gpu
+
+  jupyter-cpu:
+    build:
+      context: .
+    image: slim-jupyter-base
+    container_name: ${CONTAINER_NAME}-cpu
+    restart: always
+    shm_size: ${CONTAINER_SHARED_MEMORY}
+    environment: []
+    ports:
+      - "${CONTAINER_PORT}:8888"
+    volumes:
+      - ${CONTAINER_WORKSPACE}:/workspace
+    profiles:
+      - cpu
