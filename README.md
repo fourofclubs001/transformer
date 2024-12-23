@@ -7,7 +7,11 @@ The implementation is located in the src directory, and the tests for each modul
 I followed the TDD methodology to build this project, aiming to make the code as understandable as possible.
 
 # for running the container
-docker-compose up
+docker-compose --profile cpu up --build -d
+
+or
+
+docker-compose --profile gpu up --build -d
 
 # Use
 - install VSCode extension Dev Containers
