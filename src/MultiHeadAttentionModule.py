@@ -16,6 +16,8 @@ class MultiHeadAttentionModule(nn.Module):
 
             self.attentionHeads.append(AttentionModule(modelDimension, applyMask=applyMask))
 
+        self.attentionHeads = nn.ModuleList(self.attentionHeads)
+
     def concatenateHeadsForwardPass(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor)-> torch.Tensor:
 
         headsResults = []

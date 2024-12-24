@@ -4,6 +4,12 @@ import math
 
 class PositionalEncodingModuleTest(BaseTest):
 
+    def setUp(self):
+
+        super().setUp()
+
+        self.positionalEncoder = PositionalEncoderModule(self.modelDimension)
+
     def calculate_positional_encoding(self, position: int, dimension: int)-> torch.Tensor:
 
             value = position/(10000**(2*dimension/self.modelDimension))
@@ -15,13 +21,12 @@ class PositionalEncodingModuleTest(BaseTest):
 
     def test_can_calculate_positional_encoding_for_single_token(self):
         
-        expected = [self.calculate_positional_encoding(0,dimension) 
+        expected = [self.calculate_positional_encoding(0, dimension) 
                    for dimension in range(self.modelDimension)]
         
         expected = torch.Tensor(expected)
         
-        positionalEncoder = PositionalEncoderModule(self.modelDimension)
-        output = positionalEncoder.calculatePositionalEncodingForSingleTokenAt(0)
+        output = self.positionalEncoder.calculatePositionalEncodingForSingleTokenAt(0)
 
         self.assertTrue(torch.equal(output, expected))
 
@@ -38,8 +43,7 @@ class PositionalEncodingModuleTest(BaseTest):
 
         expected = torch.Tensor(expected)
 
-        positionalEncoder = PositionalEncoderModule(self.modelDimension)
-        output = positionalEncoder.calculateSequencePositionalEncoding(self.sequenceLenght)
+        output = self.positionalEncoder.calculateSequencePositionalEncoding(self.sequenceLenght)
 
         self.assertTrue(torch.equal(output, expected))
 
@@ -57,8 +61,7 @@ class PositionalEncodingModuleTest(BaseTest):
         expected = [batch, batch]
         expected = torch.Tensor(expected)
 
-        positionalEncoder = PositionalEncoderModule(self.modelDimension)
-        output = positionalEncoder.calculateBatchesPositionalEncoding(batchLenght, self.sequenceLenght)
+        output = self.positionalEncoder.calculateBatchesPositionalEncoding(batchLenght, self.sequenceLenght)
 
         self.assertTrue(torch.equal(output, expected))
 
@@ -75,11 +78,16 @@ class PositionalEncodingModuleTest(BaseTest):
         expected = [batch, batch]
         expected = torch.Tensor(expected) + self.query
 
-        positionalEncoder = PositionalEncoderModule(self.modelDimension)
-        output = positionalEncoder(self.query)
+        output = self.positionalEncoder(self.query)
 
         self.assertTrue(torch.equal(output, expected))
 
-        
+    def test_can_select_device_for_forward(self):
 
-        
+        device = torch.device('cuda')
+        self.query = self.query.to(device)
+        self.positionalEncoder.to(device)
+
+        output = self.positionalEncoder(self.query)
+
+        self.assertEqual(output.device.type, device.type)

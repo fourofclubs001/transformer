@@ -20,6 +20,8 @@ class TransformerModule(nn.Module):
 
             self.layerNorms.append(nn.LayerNorm(modelDimension))
 
+        self.layerNorms = nn.ModuleList(self.layerNorms)
+
     def addAndNorm(self, 
                    current: torch.Tensor, 
                    residual: torch.Tensor, 

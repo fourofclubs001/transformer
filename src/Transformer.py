@@ -17,8 +17,8 @@ class Transformer(nn.Module):
 
         self.positionalEncoder = PositionalEncoderModule(modelDimension)
 
-        self.encoders = [EncoderModule(nHeads, modelDimension) for _ in range(nEncoders)]
-        self.decoders = [DecoderModule(nHeads, modelDimension) for _ in range(nDecoders)]
+        self.encoders = nn.ModuleList([EncoderModule(nHeads, modelDimension) for _ in range(nEncoders)])
+        self.decoders = nn.ModuleList([DecoderModule(nHeads, modelDimension) for _ in range(nDecoders)])
 
         self.linear = nn.Linear(modelDimension*sequenceLenght, nTokens)
         self.softmax = nn.Softmax(dim=1)

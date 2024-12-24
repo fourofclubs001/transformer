@@ -43,3 +43,13 @@ class TransformerTest(BaseTest):
 
         expected = torch.ones((self.query.shape[0], self.nTokens))
         self.assert_equal_dimensions(output, expected)
+
+    def test_can_select_device_for_forward(self):
+
+        device = torch.device('cuda')
+        self.query = self.query.to(device)
+        self.transformer.to(device)
+
+        output = self.transformer(self.query, self.query)
+
+        self.assertEqual(output.device.type, device.type)

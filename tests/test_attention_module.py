@@ -189,3 +189,17 @@ class AttentionModuleTest(BaseTest):
             self.attentionModule(query, key, value)
 
         self.assertEqual(error.exception.args[0], QUERY_KEY__VALUE_TOKEN_LENGHT_MUST_MODEL_DIMENSION)
+
+    def test_can_select_device_for_forward(self):
+
+        device = torch.device('cuda')
+        
+        self.query = self.query.to(device)
+        self.key = self.key.to(device)
+        self.value = self.value.to(device)
+
+        self.attentionModule.to(device)
+
+        output = self.attentionModule(self.query, self.key, self.value)
+
+        self.assertEqual(output.device.type, device.type)
