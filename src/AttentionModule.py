@@ -39,9 +39,9 @@ class AttentionModule(nn.Module):
 
         self.modelDimension = modelDimension
 
-        self.qW = nn.Linear(modelDimension, modelDimension)
-        self.kW = nn.Linear(modelDimension, modelDimension)
-        self.vW = nn.Linear(modelDimension, modelDimension)
+        self.qW = nn.Linear(modelDimension, modelDimension, bias=False)
+        self.kW = nn.Linear(modelDimension, modelDimension, bias=False)
+        self.vW = nn.Linear(modelDimension, modelDimension, bias=False)
 
         self.applyMask = applyMask
 

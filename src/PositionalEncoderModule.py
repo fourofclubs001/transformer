@@ -27,7 +27,8 @@ class PositionalEncoderModule(nn.Module):
 
         return result
     
-    def calculateSequencePositionalEncoding(self, sequenceLenght: int, device: torch.device)-> torch.Tensor:
+    def calculateSequencePositionalEncoding(self, sequenceLenght: int, 
+                                            device: torch.device = 'cpu')-> torch.Tensor:
          
         result = torch.zeros((sequenceLenght, self.modelDimension), device=device)
 
@@ -37,7 +38,8 @@ class PositionalEncoderModule(nn.Module):
 
         return result
     
-    def calculateBatchesPositionalEncoding(self, batchLenght: int, sequenceLenght: int, device: torch.device)-> torch.Tensor:
+    def calculateBatchesPositionalEncoding(self, batchLenght: int, sequenceLenght: int,
+                                           device: torch.device = 'cpu')-> torch.Tensor:
          
         result = torch.zeros((batchLenght, sequenceLenght, self.modelDimension), device=device)
 
