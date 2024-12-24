@@ -11,7 +11,7 @@ services:
       - NVIDIA_VISIBLE_DEVICES=${CONTAINER_DEVICES}
       - NVIDIA_DRIVER_CAPABILITIES=all
     ports:
-      - "${CONTAINER_PORT}:8888"
+      - "${CONTAINER_GPU_PORT}:8888"
     volumes:
       - ${CONTAINER_WORKSPACE}:/workspace
     profiles:
@@ -26,7 +26,7 @@ services:
     shm_size: ${CONTAINER_SHARED_MEMORY}
     environment: []
     ports:
-      - "${CONTAINER_PORT}:8888"
+      - "${CONTAINER_CPU_PORT}:8888"
     volumes:
       - ${CONTAINER_WORKSPACE}:/workspace
     profiles:
