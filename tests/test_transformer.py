@@ -3,9 +3,10 @@ from src.Transformer import *
 
 class TransformerTest(BaseTest):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
 
-        super().setUp()
+        super().setUpClass()
 
         self.nTokens = 10
         self.transformer = Transformer(self.querySequenceLenght, self.nTokens)

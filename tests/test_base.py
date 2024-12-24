@@ -3,7 +3,8 @@ import torch
 
 class BaseTest(unittest.TestCase):
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(self):
 
         self.sequenceLenght = 8
         self.modelDimension = 512
