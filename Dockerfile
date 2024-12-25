@@ -14,6 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES all
 
+ENV CUDA_LAUNCH_BLOCKING 1
+
 RUN mkdir /workspace
 RUN echo "umask 002" >> /etc/profile
 RUN chmod -R 777 /workspace
