@@ -15,6 +15,8 @@ class Transformer(nn.Module):
         nEncoders = 6
         nDecoders = 6
 
+        self.embedder = nn.Embedding(nTokens, modelDimension)
+
         self.positionalEncoder = PositionalEncoderModule(modelDimension)
 
         self.encoders = nn.ModuleList([EncoderModule(nHeads, modelDimension) for _ in range(nEncoders)])
@@ -22,6 +24,11 @@ class Transformer(nn.Module):
 
         self.linear = nn.Linear(modelDimension*sequenceLenght, nTokens)
         self.softmax = nn.Softmax(dim=1)
+
+    def applyEmbedding(self, input: torch.Tensor)-> torch.Tensor:
+
+        input = input.long()
+        return self.embedder(input)
 
     def applyPositionalEncoding(self, input: torch.Tensor)-> torch.Tensor:
 
@@ -52,10 +59,14 @@ class Transformer(nn.Module):
 
     def forward(self, decoderInput: torch.Tensor, encoderInput: torch.Tensor)-> torch.Tensor:
 
+        encoderInput = self.applyEmbedding(encoderInput)
         encoderInput = self.applyPositionalEncoding(encoderInput)
-        decoderInput = self.applyPositionalEncoding(decoderInput)
         encoderOutput = self.applyEncoders(encoderInput)
+
+        decoderInput = self.applyEmbedding(decoderInput)
+        decoderInput = self.applyPositionalEncoding(decoderInput)
         decoderOutput = self.applyDecoders(decoderInput, encoderOutput)
+        
         output = self.applyOutput(decoderOutput)
 
         return output
