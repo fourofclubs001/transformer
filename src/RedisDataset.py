@@ -11,7 +11,7 @@ class RedisDataset(Dataset):
             decode_responses=True
         )
 
-    def load(self, filePath: str):
+    def load(self, filePath: str, columns: list[str]):
 
         with open(filePath, "r") as file:
 
@@ -19,5 +19,10 @@ class RedisDataset(Dataset):
 
             for idx, row in enumerate(reader):
 
-                self.redisClient.set(f"en_{idx}", row["en"])
-                self.redisClient.set(f"de_{idx}", row["de"])
+                for column in columns:
+
+                    self.redisClient.set(f"{column}_{idx}", row[column])
+
+    def __len__(self):
+
+        return len(self.redisClient.keys())//2

@@ -8,6 +8,15 @@ class RedisDatasetTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
 
+        
+        cls.create_data()
+        cls.create_test_csv_file()
+        cls.create_redis_client()
+        cls.create_dataset()
+        
+    @classmethod
+    def create_data(cls):
+
         cls.englishColumn = "en"
         cls.deutchColumn = "de"
 
@@ -22,10 +31,7 @@ class RedisDatasetTest(unittest.TestCase):
             "something else in english",
             "another thing in english"
             ]
-        
-        cls.create_test_csv_file()
-        cls.create_redis_client()
-        
+
     @classmethod
     def create_test_csv_file(cls):
 
@@ -48,6 +54,13 @@ class RedisDatasetTest(unittest.TestCase):
                                             decode_responses=True)
 
     @classmethod
+    def create_dataset(cls):
+
+        cls.dataset = RedisDataset(cls.host, cls.port)
+        cls.dataset.load(cls.testDatasetFilePath, 
+                         [cls.englishColumn, cls.deutchColumn])
+
+    @classmethod
     def tearDownClass(cls):
         
         os.remove(cls.testDatasetFilePath)
@@ -57,11 +70,14 @@ class RedisDatasetTest(unittest.TestCase):
             cls.redisClient.delete(key)
 
     def test_can_load_dataset(self):
-
-        dataset = RedisDataset(self.host, self.port)
-        dataset.load(self.testDatasetFilePath)
         
         for idx in range(len(self.englishSenteces)):
 
             self.assertEqual(self.redisClient.get(f"{self.englishColumn}_{idx}"), self.englishSenteces[idx])
             self.assertEqual(self.redisClient.get(f"{self.deutchColumn}_{idx}"), self.deutchSenteces[idx])
+
+    def test_can_get_len(self):
+
+        self.assertEqual(len(self.dataset), len(self.englishSenteces))
+
+    def test_can_get_item(self): pass
