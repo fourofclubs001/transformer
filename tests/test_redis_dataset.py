@@ -2,16 +2,17 @@ import unittest
 import redis
 import os
 from src.RedisDataset import *
+from src.TokenizerPadder import *
 
 class RedisDatasetTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
 
-        
         cls.create_data()
         cls.create_test_csv_file()
         cls.create_redis_client()
+        cls.clean_database()
         cls.create_dataset()
         
     @classmethod
@@ -54,9 +55,18 @@ class RedisDatasetTest(unittest.TestCase):
                                             decode_responses=True)
 
     @classmethod
+    def clean_database(cls):
+
+        for key in cls.redisClient.keys():
+
+            cls.redisClient.delete(key)
+
+    @classmethod
     def create_dataset(cls):
 
-        cls.dataset = RedisDataset(cls.host, cls.port, cls.englishColumn, cls.deutchColumn)
+        cls.prefixName = "testing"
+
+        cls.dataset = RedisDataset(cls.host, cls.port, cls.prefixName, cls.englishColumn, cls.deutchColumn)
         cls.dataset.load(cls.testDatasetFilePath)
 
     @classmethod
@@ -72,8 +82,10 @@ class RedisDatasetTest(unittest.TestCase):
         
         for idx in range(len(self.englishSenteces)):
 
-            self.assertEqual(self.redisClient.get(f"{self.englishColumn}_{idx}"), self.englishSenteces[idx])
-            self.assertEqual(self.redisClient.get(f"{self.deutchColumn}_{idx}"), self.deutchSenteces[idx])
+            self.assertEqual(self.redisClient.get(f"{self.prefixName}_{self.englishColumn}_{idx}"), 
+                                                  self.englishSenteces[idx])
+            self.assertEqual(self.redisClient.get(f"{self.prefixName}_{self.deutchColumn}_{idx}"), 
+                                                  self.deutchSenteces[idx])
 
     def test_can_get_len(self):
 

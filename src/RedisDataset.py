@@ -3,13 +3,15 @@ import redis
 import csv
 class RedisDataset(Dataset):
 
-    def __init__(self, host: str, port: int, firstColumn: str, secondColumn: str):
+    def __init__(self, host: str, port: int, prefixName: str, firstColumn: str, secondColumn: str):
 
         self.redisClient = redis.StrictRedis(
             host=host,
             port=port,
             decode_responses=True
         )
+
+        self.prefixName = prefixName
 
         self.firstColumn = firstColumn
         self.secondColumn = secondColumn
@@ -22,8 +24,8 @@ class RedisDataset(Dataset):
 
             for idx, row in enumerate(reader):
 
-                self.redisClient.set(f"{self.firstColumn}_{idx}", row[self.firstColumn])
-                self.redisClient.set(f"{self.secondColumn}_{idx}", row[self.secondColumn])
+                self.redisClient.set(f"{self.prefixName}_{self.firstColumn}_{idx}", row[self.firstColumn])
+                self.redisClient.set(f"{self.prefixName}_{self.secondColumn}_{idx}", row[self.secondColumn])
 
     def __len__(self):
 
@@ -31,7 +33,7 @@ class RedisDataset(Dataset):
     
     def __getitem__(self, index)-> tuple[str]:
 
-        firstResult = self.redisClient.get(f"{self.firstColumn}_{index}")
-        secondResult = self.redisClient.get(f"{self.secondColumn}_{index}")
+        firstResult = self.redisClient.get(f"{self.prefixName}_{self.firstColumn}_{index}")
+        secondResult = self.redisClient.get(f"{self.prefixName}_{self.secondColumn}_{index}")
 
         return firstResult, secondResult
