@@ -1,5 +1,5 @@
 services:
-  jupyter-gpu:
+  jupyter:
     build:
       context: .
     image: slim-jupyter-base
@@ -14,20 +14,23 @@ services:
       - "${CONTAINER_GPU_PORT}:8888"
     volumes:
       - ${CONTAINER_WORKSPACE}:/workspace
-    profiles:
-      - gpu
 
-  jupyter-cpu:
-    build:
-      context: .
-    image: slim-jupyter-base
-    container_name: ${CONTAINER_NAME}-cpu
-    restart: always
-    shm_size: ${CONTAINER_SHARED_MEMORY}
-    environment: []
+  redis-deployment:
+    container_name: redis
+    image: redis:7.0
     ports:
-      - "${CONTAINER_CPU_PORT}:8888"
+      - "6379:6379"
     volumes:
-      - ${CONTAINER_WORKSPACE}:/workspace
+      - ${CONTAINER_DATASET_DEPLOYMENT}:/data
     profiles:
-      - cpu
+      - deployment
+
+  redis-testing:
+    container_name: redis
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - ${CONTAINER_DATASET_TESTING}:/data
+    profiles:
+      - testing
