@@ -56,9 +56,8 @@ class RedisDatasetTest(unittest.TestCase):
     @classmethod
     def create_dataset(cls):
 
-        cls.dataset = RedisDataset(cls.host, cls.port)
-        cls.dataset.load(cls.testDatasetFilePath, 
-                         [cls.englishColumn, cls.deutchColumn])
+        cls.dataset = RedisDataset(cls.host, cls.port, cls.englishColumn, cls.deutchColumn)
+        cls.dataset.load(cls.testDatasetFilePath)
 
     @classmethod
     def tearDownClass(cls):
@@ -80,4 +79,8 @@ class RedisDatasetTest(unittest.TestCase):
 
         self.assertEqual(len(self.dataset), len(self.englishSenteces))
 
-    def test_can_get_item(self): pass
+    def test_can_get_item(self):
+
+        for idx in range(len(self.englishSenteces)):
+
+            self.assertEqual(self.dataset[idx], (self.englishSenteces[idx], self.deutchSenteces[idx]))

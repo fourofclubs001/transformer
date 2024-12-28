@@ -3,7 +3,7 @@ import redis
 import csv
 class RedisDataset(Dataset):
 
-    def __init__(self, host: str, port: int):
+    def __init__(self, host: str, port: int, firstColumn: str, secondColumn: str):
 
         self.redisClient = redis.StrictRedis(
             host=host,
@@ -11,7 +11,10 @@ class RedisDataset(Dataset):
             decode_responses=True
         )
 
-    def load(self, filePath: str, columns: list[str]):
+        self.firstColumn = firstColumn
+        self.secondColumn = secondColumn
+
+    def load(self, filePath: str):
 
         with open(filePath, "r") as file:
 
@@ -19,10 +22,16 @@ class RedisDataset(Dataset):
 
             for idx, row in enumerate(reader):
 
-                for column in columns:
-
-                    self.redisClient.set(f"{column}_{idx}", row[column])
+                self.redisClient.set(f"{self.firstColumn}_{idx}", row[self.firstColumn])
+                self.redisClient.set(f"{self.secondColumn}_{idx}", row[self.secondColumn])
 
     def __len__(self):
 
         return len(self.redisClient.keys())//2
+    
+    def __getitem__(self, index)-> tuple[str]:
+
+        firstResult = self.redisClient.get(f"{self.firstColumn}_{index}")
+        secondResult = self.redisClient.get(f"{self.secondColumn}_{index}")
+
+        return firstResult, secondResult
