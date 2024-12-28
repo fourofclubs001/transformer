@@ -13,7 +13,7 @@ class TokenizerPadder:
         self.trainer = BpeTrainer(special_tokens=[endOfWordToken, endOfTextToken])
 
     def train(self, dataset: list[str]):
-
+        
         self.tokenizer.train_from_iterator(dataset, self.trainer)
 
     def encode(self, input: str)-> list[int]:
