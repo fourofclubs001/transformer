@@ -16,21 +16,15 @@ services:
       - ${CONTAINER_WORKSPACE}:/workspace
 
   redis-deployment:
-    container_name: redis
     image: redis:7.0
     ports:
-      - "6379:6379"
+      - "${CONTAINER_REDIS_DEPLOYMENT_PORT}:6379"
     volumes:
       - ${CONTAINER_DATASET_DEPLOYMENT}:/data
-    profiles:
-      - deployment
 
   redis-testing:
-    container_name: redis
     image: redis:7.0
     ports:
-      - "6379:6379"
+      - "${CONTAINER_REDIS_TESTING_PORT}:6379"
     volumes:
       - ${CONTAINER_DATASET_TESTING}:/data
-    profiles:
-      - testing

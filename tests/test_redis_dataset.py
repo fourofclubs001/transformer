@@ -48,7 +48,7 @@ class RedisDatasetTest(unittest.TestCase):
     @classmethod
     def create_redis_client(cls):
 
-        cls.host = "redis"
+        cls.host = "redis-testing"
         cls.port = 6379
 
         cls.redisClient = redis.StrictRedis(host=cls.host,port=cls.port,

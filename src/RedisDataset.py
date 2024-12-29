@@ -21,11 +21,10 @@ class RedisDataset(Dataset):
         with open(filePath, "r") as file:
 
             reader = csv.DictReader(file)
-
             for idx, row in enumerate(reader):
 
-                self.redisClient.set(f"{self.prefixName}_{self.firstColumn}_{idx}", row[self.firstColumn])
-                self.redisClient.set(f"{self.prefixName}_{self.secondColumn}_{idx}", row[self.secondColumn])
+                self.redisClient.set(f"{self.prefixName}_{self.firstColumn}_{idx}", str(row[self.firstColumn]))
+                self.redisClient.set(f"{self.prefixName}_{self.secondColumn}_{idx}", str(row[self.secondColumn]))
 
     def __len__(self):
 
