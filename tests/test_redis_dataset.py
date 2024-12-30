@@ -98,9 +98,6 @@ class RedisDatasetTest(unittest.TestCase):
 
     def test_can_get_len(self):
 
-        self.trainDataset.updateLenght()
-        self.testDataset.updateLenght()
-
         self.assertEqual(len(self.trainDataset), len(self.englishSenteces))
         self.assertEqual(len(self.testDataset), len(self.englishSenteces))
 

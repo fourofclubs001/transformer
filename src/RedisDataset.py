@@ -28,6 +28,8 @@ class RedisDataset(Dataset):
                 self.redisClient.set(f"{self.prefixName}_{self.firstColumn}_{idx}", str(row[self.firstColumn]))
                 self.redisClient.set(f"{self.prefixName}_{self.secondColumn}_{idx}", str(row[self.secondColumn]))
 
+        self.updateLenght()
+
     def updateLenght(self):
 
         self.lenght = 0
