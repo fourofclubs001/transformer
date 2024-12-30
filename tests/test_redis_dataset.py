@@ -64,10 +64,14 @@ class RedisDatasetTest(unittest.TestCase):
     @classmethod
     def create_dataset(cls):
 
-        cls.prefixName = "testing"
+        cls.prefixTrain = "train"
+        cls.prefixTest = "test"
 
-        cls.dataset = RedisDataset(cls.host, cls.port, cls.prefixName, cls.englishColumn, cls.deutchColumn)
-        cls.dataset.load(cls.testDatasetFilePath)
+        cls.trainDataset = RedisDataset(cls.host, cls.port, cls.prefixTrain, cls.englishColumn, cls.deutchColumn)
+        cls.trainDataset.load(cls.testDatasetFilePath)
+
+        cls.testDataset = RedisDataset(cls.host, cls.port, cls.prefixTest, cls.englishColumn, cls.deutchColumn)
+        cls.testDataset.load(cls.testDatasetFilePath)
 
     @classmethod
     def tearDownClass(cls):
@@ -82,17 +86,27 @@ class RedisDatasetTest(unittest.TestCase):
         
         for idx in range(len(self.englishSenteces)):
 
-            self.assertEqual(self.redisClient.get(f"{self.prefixName}_{self.englishColumn}_{idx}"), 
+            self.assertEqual(self.redisClient.get(f"{self.prefixTrain}_{self.englishColumn}_{idx}"), 
                                                   self.englishSenteces[idx])
-            self.assertEqual(self.redisClient.get(f"{self.prefixName}_{self.deutchColumn}_{idx}"), 
+            self.assertEqual(self.redisClient.get(f"{self.prefixTrain}_{self.deutchColumn}_{idx}"), 
+                                                  self.deutchSenteces[idx])
+            
+            self.assertEqual(self.redisClient.get(f"{self.prefixTest}_{self.englishColumn}_{idx}"), 
+                                                  self.englishSenteces[idx])
+            self.assertEqual(self.redisClient.get(f"{self.prefixTest}_{self.deutchColumn}_{idx}"), 
                                                   self.deutchSenteces[idx])
 
     def test_can_get_len(self):
 
-        self.assertEqual(len(self.dataset), len(self.englishSenteces))
+        self.trainDataset.updateLenght()
+        self.testDataset.updateLenght()
+
+        self.assertEqual(len(self.trainDataset), len(self.englishSenteces))
+        self.assertEqual(len(self.testDataset), len(self.englishSenteces))
 
     def test_can_get_item(self):
 
         for idx in range(len(self.englishSenteces)):
 
-            self.assertEqual(self.dataset[idx], (self.englishSenteces[idx], self.deutchSenteces[idx]))
+            self.assertEqual(self.trainDataset[idx], (self.englishSenteces[idx], self.deutchSenteces[idx]))
+            self.assertEqual(self.testDataset[idx], (self.englishSenteces[idx], self.deutchSenteces[idx]))
