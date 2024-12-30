@@ -1,9 +1,11 @@
 from torch.utils.data import Dataset
 import redis
 import csv
+from src.TokenizerPadder import *
+
 class RedisDataset(Dataset):
 
-    def __init__(self, host: str, port: int, prefixName: str, firstColumn: str, secondColumn: str):
+    def __init__(self, host: str, port: int, prefixName: str, firstColumn: str, secondColumn: str, tokenizer: TokenizerPadder = None):
 
         self.redisClient = redis.StrictRedis(
             host=host,
@@ -15,6 +17,8 @@ class RedisDataset(Dataset):
 
         self.firstColumn = firstColumn
         self.secondColumn = secondColumn
+
+        self.tokenizer = tokenizer
 
         self.lenght = None
 
@@ -48,5 +52,10 @@ class RedisDataset(Dataset):
 
         firstResult = self.redisClient.get(f"{self.prefixName}_{self.firstColumn}_{index}")
         secondResult = self.redisClient.get(f"{self.prefixName}_{self.secondColumn}_{index}")
+
+        if self.tokenizer:
+
+            firstResult = self.tokenizer.addSpecialTokens(firstResult)
+            secondResult = self.tokenizer.addSpecialTokens(secondResult)
 
         return firstResult, secondResult

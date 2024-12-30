@@ -107,3 +107,18 @@ class RedisDatasetTest(unittest.TestCase):
 
             self.assertEqual(self.trainDataset[idx], (self.englishSenteces[idx], self.deutchSenteces[idx]))
             self.assertEqual(self.testDataset[idx], (self.englishSenteces[idx], self.deutchSenteces[idx]))
+
+    def test_can_transform_with_special_tokens(self):
+
+        tokenizer = TokenizerPadder("<|endofword|>", "<|endoftext|>")
+
+        prefix = "special"
+
+        dataset = RedisDataset(self.host, self.port, prefix, self.englishColumn, self.deutchColumn, tokenizer)
+        dataset.load(self.testDatasetFilePath)
+
+        for idx in range(len(dataset)):
+
+            self.assertEqual(dataset[idx][0], tokenizer.addSpecialTokens(self.englishSenteces[idx]))
+            self.assertEqual(dataset[idx][1], tokenizer.addSpecialTokens(self.deutchSenteces[idx]))
+
