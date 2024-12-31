@@ -2,6 +2,12 @@ from tokenizers import Tokenizer
 from tokenizers.models import BPE
 from tokenizers.trainers import BpeTrainer
 
+class CannotEncodeWithSmallerLenghtThanRealEncodingLenght(Exception):
+
+    def __init__(self, lenghtGiven: int, lenghtReal: int):
+
+        super().__init__(f"Can not encode with smaller lenght than real encoding lenght: given lenght is {lenghtGiven} but real lenght is {lenghtReal}")
+
 class TokenizerPadder:
 
     def __init__(self, endOfWordToken: str, endOfTextToken: str):
@@ -20,6 +26,10 @@ class TokenizerPadder:
 
         input = self.addSpecialTokens(input)
         encoded = self.tokenizer.encode(input).ids
+
+        if lenght < len(encoded): 
+            
+            raise CannotEncodeWithSmallerLenghtThanRealEncodingLenght(lenght, len(encoded))
 
         for _ in range(len(encoded), lenght):
 

@@ -106,3 +106,19 @@ class TokenizerPadderTest(unittest.TestCase):
         for idx in range(len(decoded)):
 
             self.assertEqual(decoded[idx], withSpecialTokens[idx])
+
+    def test_raise_error_when_lenght_lower_than_encoded_lenght(self):
+
+        sentence = "This is the a sentence"
+
+        encoded = self.tokenizerPadder.addSpecialTokens(sentence)
+        encoded = self.tokenizer.encode(encoded)
+
+        lenght = len(encoded)
+
+        with self.assertRaises(CannotEncodeWithSmallerLenghtThanRealEncodingLenght) as error:
+
+            self.tokenizerPadder.encode(sentence, lenght-1)
+
+        self.assertEqual(error.exception.args[0], 
+                         f"Can not encode with smaller lenght than real encoding lenght: given lenght is {lenght-1} but real lenght is {lenght}")
