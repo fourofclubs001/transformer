@@ -9,6 +9,8 @@ class TokenizerPadderTest(unittest.TestCase):
 
     def setUp(self):
 
+        self.lenght = 42
+
         self.endOfWordToken = "<|EOW|>"
         self.endOfTextToken = "<|EOT|>"
 
@@ -27,7 +29,9 @@ class TokenizerPadderTest(unittest.TestCase):
         encoded = self.tokenizerPadder.addSpecialTokens(self.dataset[0])
         encoded = self.tokenizer.encode(encoded).ids
 
-        encodedPadder = self.tokenizerPadder.encode(self.dataset[0])
+        encodedPadder = self.tokenizerPadder.encode(self.dataset[0], self.lenght)
+
+        self.assertEqual(len(encodedPadder), self.lenght)
 
         for characterIdx in range(len(encoded)):
 
@@ -61,30 +65,17 @@ class TokenizerPadderTest(unittest.TestCase):
 
     def test_can_add_end_of_text_padding(self):
 
-        encodedBatch = self.tokenizerPadder.encodeBatch(self.dataset)
+        encodedBatch = self.tokenizerPadder.encodeBatch(self.dataset, self.lenght)
 
-        encodedShort = self.tokenizerPadder.encode(self.dataset[0])
-        encodedShortWithPadding = encodedBatch[0]
+        encoded0 = self.tokenizerPadder.encode(self.dataset[0], self.lenght)
+        encoded1 = self.tokenizerPadder.encode(self.dataset[1], self.lenght)
 
-        encodedLong = self.tokenizerPadder.encode(self.dataset[1])
-        encodedLongWithPadding = encodedBatch[1]
-
-        self.assertEqual(encodedLong, encodedLongWithPadding)
-
-        for idx in range(len(encodedShortWithPadding)):
-
-            if idx < len(encodedShort):
-
-                self.assertEqual(encodedShort[idx], encodedShortWithPadding[idx])
-
-            else:
-
-                endOfTextTokenNumber = self.tokenizer.encode(self.endOfTextToken).ids[0]
-                self.assertEqual(endOfTextTokenNumber, encodedShortWithPadding[idx])
+        self.assertEqual(encodedBatch[0], encoded0)
+        self.assertEqual(encodedBatch[1], encoded1)
 
     def test_can_decode(self):
 
-        encoded = self.tokenizerPadder.encode(self.dataset[0])
+        encoded = self.tokenizerPadder.encode(self.dataset[0], self.lenght)
         decoded = self.tokenizerPadder.decode(encoded)
 
         withSpecialTokens = self.tokenizerPadder.addSpecialTokens(self.dataset[0])
@@ -93,7 +84,7 @@ class TokenizerPadderTest(unittest.TestCase):
 
     def test_decode_a_single_EOT(self):
 
-        encoded = self.tokenizerPadder.encodeBatch(self.dataset)[0]
+        encoded = self.tokenizerPadder.encodeBatch(self.dataset, self.lenght)[0]
         decoded = self.tokenizerPadder.decode(encoded)
 
         withSpecialTokens = self.tokenizerPadder.addEndOfWord(self.dataset[0])
@@ -103,7 +94,7 @@ class TokenizerPadderTest(unittest.TestCase):
 
     def test_can_decode_batch(self):
 
-        encoded = self.tokenizerPadder.encodeBatch(self.dataset)
+        encoded = self.tokenizerPadder.encodeBatch(self.dataset, self.lenght)
         decoded = self.tokenizerPadder.decodeBatch(encoded)
 
         withSpecialTokens = []

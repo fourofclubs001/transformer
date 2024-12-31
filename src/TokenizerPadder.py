@@ -16,10 +16,16 @@ class TokenizerPadder:
         
         self.tokenizer.train_from_iterator(dataset, self.trainer)
 
-    def encode(self, input: str)-> list[int]:
+    def encode(self, input: str, lenght: int)-> list[int]:
 
         input = self.addSpecialTokens(input)
-        return self.tokenizer.encode(input).ids
+        encoded = self.tokenizer.encode(input).ids
+
+        for _ in range(len(encoded), lenght):
+
+            encoded.append(self.tokenizer.encode(self.endOfText).ids[0])
+
+        return encoded
     
     def cleanEOTPadding(self, input: list[int])-> list[int]:
 
@@ -73,19 +79,13 @@ class TokenizerPadder:
 
         return result
 
-    def encodeBatch(self, input: list[str])-> list[list[int]]:
+    def encodeBatch(self, input: list[str], lenght: int)-> list[list[int]]:
 
         encoded = []
 
         for sentence in input:
 
-            encoded.append(self.encode(sentence))
-
-        maxLenght = max([len(tokens) for tokens in encoded])
-
-        for tokens in encoded:
-
-            while len(tokens) < maxLenght: tokens.append(self.encode(self.endOfText)[0])
+            encoded.append(self.encode(sentence, lenght))
 
         return encoded
     
